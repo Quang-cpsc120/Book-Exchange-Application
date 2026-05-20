@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 const ActivityLog = require('../models/ActivityLog');
+const SearchLog = require('../models/SearchLog');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 
@@ -27,6 +28,17 @@ router.get('/', protect, async (req, res) => {
     const books = await Book.find(filter)
       .populate('owner', 'fullName studentId department year')
       .sort(sortBy);
+
+    // Log search asynchronously (don't await — never block the response)
+    SearchLog.create({
+      user: req.user._id,
+      query: q || '',
+      subject: subject || '',
+      condition: condition || '',
+      sort: sort || 'newest',
+      resultsCount: books.length,
+      page: 'browse',
+    }).catch(() => {});
 
     res.json(books);
   } catch (err) {

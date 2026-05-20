@@ -5,6 +5,7 @@ import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
 import Navbar from './components/Navbar';
 
 function PrivateRoute({ children }) {
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
           <Route path="/browse" element={<PrivateRoute><ProductPage /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

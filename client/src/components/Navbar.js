@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import PostBookModal from './PostBookModal';
 
@@ -8,7 +9,23 @@ export default function Navbar() {
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [postOpen, setPostOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const dropRef = useRef(null);
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const res = await axios.get('/api/requests');
+        const pending = (res.data || []).filter(
+          r => r.bookOwner?._id === user?._id && r.status === 'pending'
+        );
+        setPendingCount(pending.length);
+      } catch {}
+    };
+    fetchPending();
+    const id = setInterval(fetchPending, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   const initials = (name = '') =>
     name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -84,7 +101,21 @@ export default function Navbar() {
                   <Link to="/profile?tab=requests" style={s.dropItem} onClick={() => setDropdownOpen(false)}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                     Exchange Requests
+                    {pendingCount > 0 && (
+                      <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', borderRadius: 10, fontSize: 10, fontWeight: 700, padding: '1px 6px', minWidth: 18, textAlign: 'center' }}>
+                        {pendingCount}
+                      </span>
+                    )}
                   </Link>
+                  {user?.isAdmin && (
+                    <>
+                      <div style={s.dropDivider} />
+                      <Link to="/admin" style={{ ...s.dropItem, color: '#6366f1' }} onClick={() => setDropdownOpen(false)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                        Admin Dashboard
+                      </Link>
+                    </>
+                  )}
                   <div style={s.dropDivider} />
                   <button style={{ ...s.dropItem, color: 'var(--danger)', width: '100%', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'var(--font)', textAlign: 'left' }} onClick={logout}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>

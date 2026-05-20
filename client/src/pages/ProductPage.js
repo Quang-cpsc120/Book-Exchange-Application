@@ -14,19 +14,26 @@ export default function ProductPage() {
   const [books, setBooks]           = useState([]);
   const [loading, setLoading]       = useState(true);
   const [search, setSearch]         = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [subject, setSubject]       = useState('');
   const [condition, setCondition]   = useState('');
   const [sort, setSort]             = useState('newest');
   const [selected, setSelected]     = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(0);
 
+  // 400ms debounce on search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(t);
+  }, [search]);
+
   const fetchBooks = useCallback(async () => {
     setLoading(true);
     try {
       const params = { sort };
-      if (search)    params.q         = search;
-      if (subject)   params.subject   = subject;
-      if (condition) params.condition = condition;
+      if (debouncedSearch) params.q         = debouncedSearch;
+      if (subject)         params.subject   = subject;
+      if (condition)       params.condition = condition;
       const res = await api.get('/books', { params });
       setBooks(res.data);
     } catch (e) {
@@ -34,11 +41,11 @@ export default function ProductPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, subject, condition, sort]);
+  }, [debouncedSearch, subject, condition, sort]);
 
   useEffect(() => { fetchBooks(); }, [fetchBooks]);
 
-  const clearAll = () => { setSearch(''); setSubject(''); setCondition(''); setSort('newest'); };
+  const clearAll = () => { setSearch(''); setDebouncedSearch(''); setSubject(''); setCondition(''); setSort('newest'); };
   const hasFilters = search || subject || condition || sort !== 'newest';
 
   const openBook = (book, i) => { setSelected(book); setSelectedIdx(i); };

@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
     avatarColor: { type: String, default: '' },
     booksPosted:       { type: Number, default: 0 },
     exchangesCompleted:{ type: Number, default: 0 },
+    isAdmin:           { type: Boolean, default: false },
   },
   { timestamps: true }
 );
