@@ -68,7 +68,7 @@ export default function HomePage() {
             <div style={s.nudgeTitle}>Get better recommendations</div>
             <div style={s.nudgeSub}>Add your major, year, and classes to see books tailored to your courses.</div>
           </div>
-          <Link to="/profile" className="btn btn-primary btn-sm">Update profile →</Link>
+          <Link to="/profile" className="btn btn-cta btn-sm">Update profile →</Link>
         </div>
       )}
 
@@ -122,7 +122,7 @@ export default function HomePage() {
                 <div className="icon">📭</div>
                 <p>No books available yet. Be the first to post one!</p>
                 <div style={{ marginTop: 20 }}>
-                  <Link to="/browse" className="btn btn-primary">Browse all books</Link>
+                  <Link to="/browse" className="btn btn-cta">Browse all books</Link>
                 </div>
               </div>
             </div>
@@ -164,44 +164,47 @@ function Section({ icon, title, sub, books, startIdx, onOpen }) {
 const s = {
   page: { maxWidth: 1100, margin: '0 auto', padding: '32px 24px' },
   hero: {
-    background: '#111',
+    background: 'linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 60%, #2060d8 100%)',
     borderRadius: 'var(--radius-xl)',
-    padding: '24px 28px',
+    padding: '26px 30px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 20,
     marginBottom: 20,
     flexWrap: 'wrap',
+    boxShadow: '0 4px 20px rgba(0,61,165,0.25)',
+    position: 'relative',
+    overflow: 'hidden',
   },
   heroLeft:    { display: 'flex', alignItems: 'center', gap: 16 },
-  heroAvatar:  { width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, flexShrink: 0 },
-  heroHeading: { fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', marginBottom: 6 },
+  heroAvatar:  { width: 52, height: 52, borderRadius: '50%', background: 'var(--orange)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800, flexShrink: 0, boxShadow: '0 2px 10px rgba(255,107,0,0.4)' },
+  heroHeading: { fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 6 },
   heroSub:     { display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
-  heroPill:    { fontSize: 12, background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.8)', padding: '3px 10px', borderRadius: 20, fontWeight: 500 },
-  heroStats:   { display: 'flex', alignItems: 'center', gap: 20, background: 'rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: '12px 22px' },
+  heroPill:    { fontSize: 12, background: 'rgba(255,255,255,0.18)', color: '#fff', padding: '3px 12px', borderRadius: 20, fontWeight: 600 },
+  heroStats:   { display: 'flex', alignItems: 'center', gap: 20, background: 'rgba(255,255,255,0.12)', borderRadius: 'var(--radius-lg)', padding: '12px 22px', backdropFilter: 'blur(4px)' },
   statItem:    { textAlign: 'center' },
-  statNum:     { display: 'block', fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em' },
-  statLbl:     { display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
-  statDiv:     { width: 1, height: 32, background: 'rgba(255,255,255,0.15)' },
+  statNum:     { display: 'block', fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' },
+  statLbl:     { display: 'block', fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2, fontWeight: 500 },
+  statDiv:     { width: 1, height: 32, background: 'rgba(255,255,255,0.2)' },
   nudge: {
     display: 'flex', alignItems: 'center', gap: 14,
-    background: '#fff', border: '1px solid var(--border)',
+    background: 'var(--orange-xlight)', border: '1.5px solid var(--orange-light)',
     borderRadius: 'var(--radius-lg)', padding: '14px 18px', marginBottom: 28,
-    borderLeft: '4px solid #111',
+    borderLeft: '4px solid var(--orange)',
   },
   nudgeIcon:  { fontSize: 22 },
-  nudgeTitle: { fontSize: 14, fontWeight: 600, color: '#111', marginBottom: 2 },
+  nudgeTitle: { fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 },
   nudgeSub:   { fontSize: 12, color: 'var(--muted)' },
-  emptyWrap:  { background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: 40 },
+  emptyWrap:  { background: '#fff', border: '1.5px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: 40, boxShadow: 'var(--shadow-sm)' },
   browseAll:  { textAlign: 'center', paddingTop: 16 },
 };
 
 const sec = {
   wrap:   { marginBottom: 40 },
   header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 },
-  title:  { fontSize: 18, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', marginBottom: 2 },
+  title:  { fontSize: 18, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.01em', marginBottom: 2 },
   sub:    { fontSize: 13, color: 'var(--muted)' },
-  count:  { fontSize: 13, color: 'var(--muted)', fontWeight: 500, flexShrink: 0, paddingTop: 3 },
+  count:  { fontSize: 13, color: 'var(--muted)', fontWeight: 600, flexShrink: 0, paddingTop: 3 },
   grid:   { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 14 },
 };

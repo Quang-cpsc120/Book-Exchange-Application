@@ -62,7 +62,7 @@ export default function Navbar() {
 
           {/* Right side */}
           <div style={s.right}>
-            <button className="btn btn-primary btn-sm" onClick={() => setPostOpen(true)}>
+            <button className="btn btn-cta btn-sm" onClick={() => setPostOpen(true)}>
               + Post a Book
             </button>
 
@@ -83,9 +83,9 @@ export default function Navbar() {
               {dropdownOpen && (
                 <div style={s.dropdown}>
                   <div style={s.dropHeader}>
-                    <div style={{ ...s.avatar, width: 40, height: 40, fontSize: 15 }}>{initials(user?.fullName)}</div>
+                    <div style={{ ...s.avatar, width: 40, height: 40, fontSize: 15, background: 'var(--blue)' }}>{initials(user?.fullName)}</div>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600 }}>{user?.fullName}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{user?.fullName}</div>
                       <div style={{ fontSize: 11, color: 'var(--muted)' }}>{user?.studentId}</div>
                     </div>
                   </div>
@@ -135,17 +135,18 @@ export default function Navbar() {
 
 const s = {
   header: {
-    background: '#fff',
-    borderBottom: '1px solid var(--border)',
+    background: 'var(--blue)',
+    borderBottom: 'none',
     position: 'sticky',
     top: 0,
     zIndex: 100,
+    boxShadow: '0 2px 12px rgba(0,61,165,0.25)',
   },
   inner: {
     maxWidth: 1200,
     margin: '0 auto',
     padding: '0 24px',
-    height: 60,
+    height: 62,
     display: 'flex',
     alignItems: 'center',
     gap: 32,
@@ -158,26 +159,26 @@ const s = {
     flexShrink: 0,
   },
   logoIcon: { fontSize: 22, lineHeight: 1 },
-  logoText: { fontSize: 18, fontWeight: 700, color: '#111', letterSpacing: '-0.02em' },
-  nav: { display: 'flex', alignItems: 'center', gap: 4, flex: 1 },
+  logoText: { fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' },
+  nav: { display: 'flex', alignItems: 'center', gap: 2, flex: 1 },
   navLink: {
     padding: '6px 14px',
     borderRadius: 'var(--radius)',
-    fontSize: 14,
-    fontWeight: 500,
-    color: 'var(--muted)',
+    fontSize: 13,
+    fontWeight: 600,
+    color: 'rgba(255,255,255,0.75)',
     textDecoration: 'none',
     transition: 'var(--transition)',
   },
-  navActive: { color: '#111', background: '#f5f5f5' },
+  navActive: { color: '#fff', background: 'rgba(255,255,255,0.15)' },
   right: { display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' },
   dropWrap: { position: 'relative' },
   avatarBtn: {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    background: 'none',
-    border: '1px solid var(--border)',
+    background: 'rgba(255,255,255,0.12)',
+    border: '1.5px solid rgba(255,255,255,0.25)',
     borderRadius: 'var(--radius)',
     padding: '5px 10px 5px 6px',
     cursor: 'pointer',
@@ -188,28 +189,28 @@ const s = {
     width: 28,
     height: 28,
     borderRadius: '50%',
-    background: '#111',
+    background: 'var(--orange)',
     color: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 11,
-    fontWeight: 700,
+    fontWeight: 800,
     flexShrink: 0,
   },
   userMeta: { display: 'flex', flexDirection: 'column', lineHeight: 1.25, textAlign: 'left' },
-  userName: { fontSize: 12, fontWeight: 600, color: '#111' },
-  userSub:  { fontSize: 10, color: 'var(--muted)' },
-  chevron:  { color: 'var(--muted)', transition: 'transform .2s', flexShrink: 0 },
+  userName: { fontSize: 12, fontWeight: 700, color: '#fff' },
+  userSub:  { fontSize: 10, color: 'rgba(255,255,255,0.6)' },
+  chevron:  { color: 'rgba(255,255,255,0.6)', transition: 'transform .2s', flexShrink: 0 },
   dropdown: {
     position: 'absolute',
-    top: 'calc(100% + 8px)',
+    top: 'calc(100% + 10px)',
     right: 0,
     background: '#fff',
-    border: '1px solid var(--border)',
+    border: '1.5px solid var(--border)',
     borderRadius: 'var(--radius-lg)',
     boxShadow: 'var(--shadow-lg)',
-    minWidth: 200,
+    minWidth: 210,
     zIndex: 200,
     overflow: 'hidden',
   },
@@ -218,6 +219,7 @@ const s = {
     alignItems: 'center',
     gap: 10,
     padding: '14px 14px 12px',
+    background: 'var(--blue-xlight)',
   },
   dropDivider: { height: 1, background: 'var(--border)', margin: '0' },
   dropItem: {
@@ -226,7 +228,7 @@ const s = {
     gap: 9,
     padding: '10px 14px',
     fontSize: 13,
-    color: '#111',
+    color: 'var(--text)',
     textDecoration: 'none',
     transition: 'background .15s',
     fontWeight: 500,

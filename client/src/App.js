@@ -46,13 +46,13 @@ export default function App() {
       </main>
       <footer style={footerStyle}>
         <div style={footerInner}>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>📚 BookSwap</span>
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>Student book exchange · {new Date().getFullYear()}</span>
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>📚 BookSwap</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>Cal State Fullerton · Student book exchange · {new Date().getFullYear()}</span>
         </div>
       </footer>
     </div>
   );
 }
 
-const footerStyle = { background: '#fff', borderTop: '1px solid var(--border)', padding: '14px 24px' };
+const footerStyle = { background: 'var(--blue)', borderTop: 'none', padding: '16px 24px' };
 const footerInner = { maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };

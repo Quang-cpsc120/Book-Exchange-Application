@@ -150,7 +150,7 @@ export default function AuthPage() {
             {error   && <div className="alert alert-err">{error}</div>}
             {success && <div className="alert alert-ok">{success}</div>}
 
-            <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={loading} style={{ marginTop: 18 }}>
+            <button className="btn btn-cta btn-block btn-lg" type="submit" disabled={loading} style={{ marginTop: 18 }}>
               {loading ? <span className="spinner" /> : null}
               {loading ? (mode === 'login' ? 'Signing in…' : 'Creating account…') : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </button>
@@ -165,25 +165,30 @@ export default function AuthPage() {
 
 const s = {
   page:       { display: 'flex', minHeight: '100vh' },
-  panel:      { flex: '0 0 42%', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 48px' },
-  panelInner: { maxWidth: 380, color: '#fff' },
+  panel:      {
+    flex: '0 0 42%',
+    background: 'linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 50%, #1a56c8 100%)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 48px',
+    position: 'relative', overflow: 'hidden',
+  },
+  panelInner: { maxWidth: 380, color: '#fff', position: 'relative', zIndex: 1 },
   brandRow:   { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36 },
-  brandName:  { fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Inter', sans-serif" },
-  panelHeading: { fontSize: 30, fontWeight: 700, color: '#fff', lineHeight: 1.25, letterSpacing: '-0.02em', marginBottom: 14 },
-  panelSub:   { fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: 32 },
+  brandName:  { fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Inter', sans-serif" },
+  panelHeading: { fontSize: 30, fontWeight: 800, color: '#fff', lineHeight: 1.25, letterSpacing: '-0.02em', marginBottom: 14 },
+  panelSub:   { fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, marginBottom: 32 },
   features:   { display: 'flex', flexDirection: 'column', gap: 12 },
   featureRow: { display: 'flex', alignItems: 'center', gap: 12 },
-  featureIcon:{ fontSize: 16, width: 34, height: 34, background: 'rgba(255,255,255,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, textAlign: 'center', paddingTop: 8 },
-  featureText:{ fontSize: 13, color: 'rgba(255,255,255,0.7)' },
-  formSide:   { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', background: '#fff', overflowY: 'auto' },
-  formWrap:   { width: '100%', maxWidth: 420 },
-  formHeading:{ fontSize: 22, fontWeight: 700, color: '#111', letterSpacing: '-0.02em', marginBottom: 6 },
+  featureIcon:{ fontSize: 16, width: 36, height: 36, background: 'rgba(255,255,255,0.12)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  featureText:{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: 500 },
+  formSide:   { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', background: 'var(--bg)', overflowY: 'auto' },
+  formWrap:   { width: '100%', maxWidth: 420, background: '#fff', borderRadius: 'var(--radius-xl)', padding: '36px 32px', boxShadow: 'var(--shadow-lg)', border: '1.5px solid var(--border)' },
+  formHeading:{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em', marginBottom: 6 },
   formSub:    { fontSize: 14, color: 'var(--muted)' },
-  switchLink: { background: 'none', border: 'none', color: '#111', fontWeight: 600, cursor: 'pointer', fontSize: 14, textDecoration: 'underline', padding: 0, fontFamily: "'Inter', sans-serif" },
+  switchLink: { background: 'none', border: 'none', color: 'var(--blue)', fontWeight: 700, cursor: 'pointer', fontSize: 14, textDecoration: 'underline', padding: 0, fontFamily: "'Inter', sans-serif" },
   classRow:   { display: 'flex', gap: 8, marginBottom: 8 },
-  classInput: { flex: 1, padding: '8px 12px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontFamily: 'var(--font)', fontSize: 13, outline: 'none' },
+  classInput: { flex: 1, padding: '9px 12px', border: '2px solid var(--border)', borderRadius: 'var(--radius)', fontFamily: 'var(--font)', fontSize: 13, outline: 'none', color: 'var(--text)' },
   classTags:  { display: 'flex', flexWrap: 'wrap', gap: 6 },
-  classTag:   { display: 'inline-flex', alignItems: 'center', gap: 5, background: '#111', color: '#fff', fontSize: 11, fontWeight: 600, padding: '3px 8px 3px 10px', borderRadius: 20 },
-  tagX:       { background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: 0, fontFamily: 'var(--font)' },
-  terms:      { marginTop: 18, fontSize: 11, color: '#aaa', lineHeight: 1.6 },
+  classTag:   { display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--blue)', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 8px 3px 10px', borderRadius: 20 },
+  tagX:       { background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: 0, fontFamily: 'var(--font)' },
+  terms:      { marginTop: 18, fontSize: 11, color: 'var(--muted2)', lineHeight: 1.6 },
 };

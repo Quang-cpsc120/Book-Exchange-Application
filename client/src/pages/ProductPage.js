@@ -154,13 +154,13 @@ function Chip({ label, onRemove }) {
   );
 }
 
-const chip  = { display: 'inline-flex', alignItems: 'center', gap: 5, background: '#111', color: '#fff', fontSize: 12, fontWeight: 500, padding: '3px 10px 3px 12px', borderRadius: 20 };
-const chipX = { background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center' };
+const chip  = { display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--orange)', color: '#fff', fontSize: 12, fontWeight: 600, padding: '3px 10px 3px 12px', borderRadius: 20 };
+const chipX = { background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center' };
 
 const s = {
   page:        { maxWidth: 1100, margin: '0 auto', padding: '32px 24px' },
   pageTop:     { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20, flexWrap: 'wrap', gap: 10 },
-  heading:     { fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', color: '#111', marginBottom: 4 },
+  heading:     { fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text)', marginBottom: 4 },
   sub:         { fontSize: 14, color: 'var(--muted)' },
   count:       { fontSize: 13, color: 'var(--muted)', fontWeight: 500 },
   searchBar:   { marginBottom: 14 },
