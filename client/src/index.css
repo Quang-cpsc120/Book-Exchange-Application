@@ -47,7 +47,8 @@
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background: linear-gradient(180deg, #cddeff 0%, #e8f0ff 35%, #f5f8ff 65%, #ffffff 100%);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   font-size: 14px;
