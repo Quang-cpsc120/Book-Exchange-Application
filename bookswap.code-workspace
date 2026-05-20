@@ -1,0 +1,21 @@
+{
+  "folders": [
+    { "path": "." }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "files.exclude": {
+      "**/node_modules": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "mongodb.mongodb-vscode",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "christian-kohler.npm-intellisense",
+      "mikestead.dotenv"
+    ]
+  }
+}
