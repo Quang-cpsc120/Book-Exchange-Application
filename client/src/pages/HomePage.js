@@ -205,11 +205,6 @@ export default function HomePage() {
   return (
     <div style={s.page}>
 
-      {/* ── Newest listings slider ── */}
-      {!loading && sliderBooks.length > 0 && (
-        <NewArrivalsSlider books={sliderBooks} onOpen={openBook} />
-      )}
-
       {/* ── Hero / welcome banner ── */}
       <div style={s.hero}>
         <div style={s.heroLeft}>
@@ -241,6 +236,11 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Newest listings slider ── */}
+      {!loading && sliderBooks.length > 0 && (
+        <NewArrivalsSlider books={sliderBooks} onOpen={openBook} />
+      )}
 
       {/* ── Profile nudge ── */}
       {!profileComplete && (
