@@ -8,24 +8,72 @@ const { protect } = require('../middleware/auth');
 // GET /api/books — browse all available books (with search & filter)
 router.get('/', protect, async (req, res) => {
   try {
-    const { q, subject, condition } = req.query;
+    const { q, subject, condition, sort } = req.query;
     const filter = { available: true, owner: { $ne: req.user._id } };
 
-    if (subject) filter.subject = subject;
+    if (subject)   filter.subject = subject;
     if (condition) filter.condition = condition;
     if (q) {
       filter.$or = [
-        { title: { $regex: q, $options: 'i' } },
-        { author: { $regex: q, $options: 'i' } },
+        { title:   { $regex: q, $options: 'i' } },
+        { author:  { $regex: q, $options: 'i' } },
         { subject: { $regex: q, $options: 'i' } },
       ];
     }
 
+    const sortMap = { newest: { createdAt: -1 }, condition: { condition: 1 } };
+    const sortBy = sortMap[sort] || { createdAt: -1 };
+
     const books = await Book.find(filter)
-      .populate('owner', 'fullName studentId department')
-      .sort({ createdAt: -1 });
+      .populate('owner', 'fullName studentId department year')
+      .sort(sortBy);
 
     res.json(books);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/books/recommended — personalized feed for home page
+router.get('/recommended', protect, async (req, res) => {
+  try {
+    const user = req.user;
+    const base = { available: true, owner: { $ne: user._id } };
+    const populate = { path: 'owner', select: 'fullName studentId department' };
+
+    // Tier 1: match user's major/department
+    let majorBooks = [];
+    if (user.department) {
+      majorBooks = await Book.find({ ...base, subject: user.department })
+        .populate(populate).sort({ createdAt: -1 }).limit(8);
+    }
+
+    const usedIds = majorBooks.map(b => b._id.toString());
+
+    // Tier 2: match user's listed classes (search title + description)
+    let classBooks = [];
+    if (user.classes && user.classes.length > 0) {
+      const classOr = user.classes.flatMap(cls => [
+        { title:       { $regex: cls, $options: 'i' } },
+        { description: { $regex: cls, $options: 'i' } },
+        { author:      { $regex: cls, $options: 'i' } },
+      ]);
+      classBooks = await Book.find({
+        ...base,
+        _id: { $nin: usedIds },
+        $or: classOr,
+      }).populate(populate).sort({ createdAt: -1 }).limit(8);
+    }
+
+    usedIds.push(...classBooks.map(b => b._id.toString()));
+
+    // Tier 3: new arrivals (everything else, most recent)
+    const newArrivals = await Book.find({
+      ...base,
+      _id: { $nin: usedIds },
+    }).populate(populate).sort({ createdAt: -1 }).limit(12);
+
+    res.json({ majorBooks, classBooks, newArrivals });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -44,15 +92,12 @@ router.get('/mine', protect, async (req, res) => {
 // GET /api/books/:id — get single book and log view
 router.get('/:id', protect, async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id).populate(
-      'owner', 'fullName studentId department'
-    );
+    const book = await Book.findById(req.params.id)
+      .populate('owner', 'fullName studentId department year');
     if (!book) return res.status(404).json({ message: 'Book not found' });
 
-    // Increment view count
     await Book.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
 
-    // Log view activity
     await ActivityLog.create({
       user: req.user._id,
       action: 'view_book',
@@ -76,10 +121,8 @@ router.post('/', protect, async (req, res) => {
       title, author, subject, condition, description,
     });
 
-    // Update user's book count
     await User.findByIdAndUpdate(req.user._id, { $inc: { booksPosted: 1 } });
 
-    // Log activity
     await ActivityLog.create({
       user: req.user._id,
       action: 'post_book',

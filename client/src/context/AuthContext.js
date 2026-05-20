@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('bs_token');
     if (token) {
       api.get('/auth/me')
-        .then((res) => setUser(res.data))
+        .then(res => setUser(res.data))
         .catch(() => localStorage.removeItem('bs_token'))
         .finally(() => setLoading(false));
     } else {
@@ -38,8 +38,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateProfile = async (data) => {
+    const res = await api.patch('/auth/profile', data);
+    setUser(res.data);
+    return res.data;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

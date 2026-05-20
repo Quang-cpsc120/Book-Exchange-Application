@@ -2,18 +2,28 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const DEPARTMENTS = ['Computer Science','Engineering','Mathematics','Physics','Chemistry','Biology','Economics','Literature','History','Other'];
+const YEARS       = ['Freshman','Sophomore','Junior','Senior','Graduate'];
 
 export default function AuthPage() {
   const { register, login } = useAuth();
-  const [mode, setMode] = useState('login');
-  const [form, setForm] = useState({ fullName: '', studentId: '', email: '', password: '', department: '' });
+  const [mode, setMode]   = useState('login');
+  const [form, setForm]   = useState({ fullName: '', studentId: '', email: '', password: '', department: '', year: '' });
+  const [classInput, setClassInput] = useState('');
+  const [classes, setClasses]       = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error,   setError]   = useState('');
   const [success, setSuccess] = useState('');
 
-  const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handle = e => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const submit = async (e) => {
+  const addClass = () => {
+    const val = classInput.trim().toUpperCase();
+    if (!val || classes.includes(val)) return;
+    setClasses([...classes, val]);
+    setClassInput('');
+  };
+
+  const submit = async e => {
     e.preventDefault();
     setError(''); setSuccess('');
     setLoading(true);
@@ -21,7 +31,7 @@ export default function AuthPage() {
       if (mode === 'login') {
         await login(form.email, form.password);
       } else {
-        await register(form);
+        await register({ ...form, classes });
         setSuccess('Account created! Welcome to BookSwap.');
       }
     } catch (err) {
@@ -31,28 +41,28 @@ export default function AuthPage() {
     }
   };
 
+  const switchMode = (m) => { setMode(m); setError(''); setSuccess(''); setClasses([]); setClassInput(''); };
+
   return (
     <div style={s.page}>
-      {/* Left panel */}
+      {/* ── Left brand panel ── */}
       <div style={s.panel}>
         <div style={s.panelInner}>
           <div style={s.brandRow}>
-            <div style={s.brandIcon}>📚</div>
+            <span style={{ fontSize: 28 }}>📚</span>
             <span style={s.brandName}>BookSwap</span>
           </div>
-          <h2 style={s.panelHeading}>Trade textbooks.<br />Save money. Help others.</h2>
-          <p style={s.panelSub}>
-            The student marketplace for buying, selling, and exchanging university textbooks with fellow students.
-          </p>
-          <div style={s.featureList}>
+          <h2 style={s.panelHeading}>Trade textbooks.<br />Save money.<br />Help others.</h2>
+          <p style={s.panelSub}>The student marketplace for exchanging university textbooks with fellow students.</p>
+          <div style={s.features}>
             {[
-              { icon: '🔍', text: 'Browse books from your university' },
+              { icon: '🔍', text: 'Personalized book recommendations' },
               { icon: '📤', text: 'List your books in seconds' },
               { icon: '🤝', text: 'Agree on exchanges directly' },
-              { icon: '📋', text: 'Track all your activity' },
+              { icon: '🎓', text: 'Matched to your major & courses' },
             ].map(f => (
-              <div key={f.text} style={s.featureItem}>
-                <span style={s.featureIcon}>{f.icon}</span>
+              <div key={f.text} style={s.featureRow}>
+                <div style={s.featureIcon}>{f.icon}</div>
                 <span style={s.featureText}>{f.text}</span>
               </div>
             ))}
@@ -60,74 +70,93 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Right panel */}
-      <div style={s.formPanel}>
-        <div style={s.formCard}>
-          <div style={s.mobileLogoRow}>
-            <div style={s.brandIcon}>📚</div>
-            <span style={{ ...s.brandName, color: '#111' }}>BookSwap</span>
-          </div>
-
+      {/* ── Right form panel ── */}
+      <div style={s.formSide}>
+        <div style={s.formWrap}>
           <h1 style={s.formHeading}>
             {mode === 'login' ? 'Sign in to your account' : 'Create an account'}
           </h1>
           <p style={s.formSub}>
-            {mode === 'login'
-              ? "Don't have an account? "
-              : 'Already have an account? '}
-            <button
-              style={s.switchLink}
-              onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); setSuccess(''); }}
-            >
+            {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+            <button style={s.switchLink} onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}>
               {mode === 'login' ? 'Create one' : 'Sign in'}
             </button>
           </p>
 
-          <form onSubmit={submit} style={{ marginTop: 24 }}>
+          <form onSubmit={submit} style={{ marginTop: 22 }}>
             {mode === 'register' && (
               <>
                 <div className="field">
-                  <label>Full Name</label>
+                  <label>Full Name *</label>
                   <input name="fullName" value={form.fullName} onChange={handle} placeholder="Jane Smith" required />
                 </div>
                 <div className="form-grid">
                   <div className="field">
-                    <label>Student ID</label>
+                    <label>Student ID *</label>
                     <input name="studentId" value={form.studentId} onChange={handle} placeholder="STU2024001" required />
                   </div>
                   <div className="field">
-                    <label>Department</label>
-                    <select name="department" value={form.department} onChange={handle}>
+                    <label>Year</label>
+                    <select name="year" value={form.year} onChange={handle}>
                       <option value="">Select…</option>
-                      {DEPARTMENTS.map(d => <option key={d}>{d}</option>)}
+                      {YEARS.map(y => <option key={y}>{y}</option>)}
                     </select>
                   </div>
                 </div>
+                <div className="field">
+                  <label>Department / Major</label>
+                  <select name="department" value={form.department} onChange={handle}>
+                    <option value="">Select…</option>
+                    {DEPARTMENTS.map(d => <option key={d}>{d}</option>)}
+                  </select>
+                </div>
+
+                {/* Classes */}
+                <div className="field">
+                  <label>Classes <span style={{ color: 'var(--muted)', fontWeight: 400 }}>(for recommendations)</span></label>
+                  <div style={s.classRow}>
+                    <input
+                      style={s.classInput}
+                      value={classInput}
+                      onChange={e => setClassInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addClass(); } }}
+                      placeholder="e.g. CPSC 120"
+                    />
+                    <button type="button" className="btn btn-outline btn-sm" onClick={addClass}>Add</button>
+                  </div>
+                  {classes.length > 0 && (
+                    <div style={s.classTags}>
+                      {classes.map(c => (
+                        <span key={c} style={s.classTag}>
+                          {c}
+                          <button type="button" style={s.tagX} onClick={() => setClasses(classes.filter(x => x !== c))}>×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </>
             )}
+
             <div className="field">
-              <label>Email address</label>
+              <label>Email address *</label>
               <input name="email" type="email" value={form.email} onChange={handle} placeholder="student@university.edu" required />
             </div>
             <div className="field">
-              <label>Password</label>
+              <label>Password *</label>
               <input name="password" type="password" value={form.password} onChange={handle} placeholder={mode === 'register' ? 'Min. 6 characters' : '••••••••'} required minLength={6} />
             </div>
 
             {error   && <div className="alert alert-err">{error}</div>}
             {success && <div className="alert alert-ok">{success}</div>}
 
-            <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={loading} style={{ marginTop: 20 }}>
+            <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={loading} style={{ marginTop: 18 }}>
               {loading ? <span className="spinner" /> : null}
-              {loading
-                ? (mode === 'login' ? 'Signing in…' : 'Creating account…')
-                : (mode === 'login' ? 'Sign In' : 'Create Account')}
+              {loading ? (mode === 'login' ? 'Signing in…' : 'Creating account…') : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </button>
           </form>
 
-          <p style={s.terms}>
-            By continuing you agree to BookSwap's <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Terms of Service</span> and <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</span>.
-          </p>
+          <p style={s.terms}>By continuing you agree to BookSwap's Terms of Service and Privacy Policy.</p>
         </div>
       </div>
     </div>
@@ -135,126 +164,26 @@ export default function AuthPage() {
 }
 
 const s = {
-  page: {
-    display: 'flex',
-    minHeight: '100vh',
-  },
-  panel: {
-    flex: '0 0 42%',
-    background: '#111111',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '48px 48px',
-    '@media(max-width:768px)': { display: 'none' },
-  },
-  panelInner: {
-    maxWidth: 380,
-    color: '#fff',
-  },
-  brandRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 40,
-  },
-  brandIcon: {
-    fontSize: 28,
-    lineHeight: 1,
-  },
-  brandName: {
-    fontSize: 22,
-    fontWeight: 700,
-    color: '#fff',
-    letterSpacing: '-0.02em',
-    fontFamily: "'Inter', sans-serif",
-  },
-  panelHeading: {
-    fontSize: 32,
-    fontWeight: 700,
-    color: '#fff',
-    lineHeight: 1.25,
-    letterSpacing: '-0.02em',
-    marginBottom: 16,
-  },
-  panelSub: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.6)',
-    lineHeight: 1.7,
-    marginBottom: 36,
-  },
-  featureList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 14,
-  },
-  featureItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-  },
-  featureIcon: {
-    fontSize: 18,
-    width: 36,
-    height: 36,
-    background: 'rgba(255,255,255,0.08)',
-    borderRadius: 8,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    lineHeight: 1,
-    textAlign: 'center',
-    paddingTop: 8,
-  },
-  featureText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.75)',
-  },
-  formPanel: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '48px 32px',
-    background: '#fff',
-  },
-  formCard: {
-    width: '100%',
-    maxWidth: 420,
-  },
-  mobileLogoRow: {
-    display: 'none',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 28,
-  },
-  formHeading: {
-    fontSize: 24,
-    fontWeight: 700,
-    color: '#111',
-    letterSpacing: '-0.02em',
-    marginBottom: 6,
-  },
-  formSub: {
-    fontSize: 14,
-    color: '#6B6B6B',
-  },
-  switchLink: {
-    background: 'none',
-    border: 'none',
-    color: '#111',
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontSize: 14,
-    textDecoration: 'underline',
-    padding: 0,
-    fontFamily: "'Inter', sans-serif",
-  },
-  terms: {
-    marginTop: 20,
-    fontSize: 12,
-    color: '#999',
-    lineHeight: 1.6,
-  },
+  page:       { display: 'flex', minHeight: '100vh' },
+  panel:      { flex: '0 0 42%', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 48px' },
+  panelInner: { maxWidth: 380, color: '#fff' },
+  brandRow:   { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36 },
+  brandName:  { fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Inter', sans-serif" },
+  panelHeading: { fontSize: 30, fontWeight: 700, color: '#fff', lineHeight: 1.25, letterSpacing: '-0.02em', marginBottom: 14 },
+  panelSub:   { fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: 32 },
+  features:   { display: 'flex', flexDirection: 'column', gap: 12 },
+  featureRow: { display: 'flex', alignItems: 'center', gap: 12 },
+  featureIcon:{ fontSize: 16, width: 34, height: 34, background: 'rgba(255,255,255,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, textAlign: 'center', paddingTop: 8 },
+  featureText:{ fontSize: 13, color: 'rgba(255,255,255,0.7)' },
+  formSide:   { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 32px', background: '#fff', overflowY: 'auto' },
+  formWrap:   { width: '100%', maxWidth: 420 },
+  formHeading:{ fontSize: 22, fontWeight: 700, color: '#111', letterSpacing: '-0.02em', marginBottom: 6 },
+  formSub:    { fontSize: 14, color: 'var(--muted)' },
+  switchLink: { background: 'none', border: 'none', color: '#111', fontWeight: 600, cursor: 'pointer', fontSize: 14, textDecoration: 'underline', padding: 0, fontFamily: "'Inter', sans-serif" },
+  classRow:   { display: 'flex', gap: 8, marginBottom: 8 },
+  classInput: { flex: 1, padding: '8px 12px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontFamily: 'var(--font)', fontSize: 13, outline: 'none' },
+  classTags:  { display: 'flex', flexWrap: 'wrap', gap: 6 },
+  classTag:   { display: 'inline-flex', alignItems: 'center', gap: 5, background: '#111', color: '#fff', fontSize: 11, fontWeight: 600, padding: '3px 8px 3px 10px', borderRadius: 20 },
+  tagX:       { background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: 0, fontFamily: 'var(--font)' },
+  terms:      { marginTop: 18, fontSize: 11, color: '#aaa', lineHeight: 1.6 },
 };
