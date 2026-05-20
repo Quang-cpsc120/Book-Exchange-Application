@@ -1,13 +1,187 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import BookCard from '../components/BookCard';
 import BookModal from '../components/BookModal';
 import api from '../utils/api';
 
+// ── Cover color palette (matches BookCard) ────────────────────────────────────
+const SLIDE_COLORS = [
+  '#003DA5','#002d7a','#1a56c8','#FF6B00','#d95a00',
+  '#0050b3','#1e40af','#c84b00','#003080','#ff8c33',
+];
+const SLIDE_ACCENTS = [
+  '#ffd580','#ffbc6b','#fff0e5','#dce8ff','#ffe0c2',
+  '#ffd166','#ffe8cc','#d4e8ff','#ffecd9','#cce0ff',
+];
+
+const SUBJECT_ABBR = {
+  'Computer Science':'CS','Mathematics':'MATH','Physics':'PHYS',
+  'Chemistry':'CHEM','Biology':'BIO','Engineering':'ENGR',
+  'Economics':'ECON','Literature':'LIT','History':'HIST','Other':'GEN',
+};
+
+const CONDITION_COLOR = {
+  'Like New': { bg: '#dcfce7', color: '#166534' },
+  'Good':     { bg: '#dce8ff', color: '#003DA5' },
+  'Fair':     { bg: '#fef3c7', color: '#92400e' },
+  'Worn':     { bg: '#fee2e2', color: '#b91c1c' },
+};
+
+// ── NewArrivalsSlider ─────────────────────────────────────────────────────────
+function NewArrivalsSlider({ books, onOpen }) {
+  const [current, setCurrent]   = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const [direction, setDirection] = useState('next'); // 'next' | 'prev'
+  const [paused, setPaused]     = useState(false);
+  const timerRef = useRef(null);
+
+  const goTo = useCallback((idx, dir = 'next') => {
+    if (animating || books.length <= 1) return;
+    setDirection(dir);
+    setAnimating(true);
+    setTimeout(() => {
+      setCurrent(idx);
+      setAnimating(false);
+    }, 380);
+  }, [animating, books.length]);
+
+  const next = useCallback(() => goTo((current + 1) % books.length, 'next'), [current, books.length, goTo]);
+  const prev = useCallback(() => goTo((current - 1 + books.length) % books.length, 'prev'), [current, books.length, goTo]);
+
+  // Auto-advance every 5 seconds
+  useEffect(() => {
+    if (paused || books.length <= 1) return;
+    timerRef.current = setTimeout(next, 5000);
+    return () => clearTimeout(timerRef.current);
+  }, [current, paused, books.length, next]);
+
+  if (books.length === 0) return null;
+
+  const book     = books[current];
+  const colorIdx = current % SLIDE_COLORS.length;
+  const bg       = SLIDE_COLORS[colorIdx];
+  const acc      = SLIDE_ACCENTS[colorIdx];
+  const abbr     = SUBJECT_ABBR[book.subject] || 'BOOK';
+  const cond     = CONDITION_COLOR[book.condition] || CONDITION_COLOR['Good'];
+
+  const slideStyle = {
+    ...sl.slide,
+    opacity:   animating ? 0 : 1,
+    transform: animating
+      ? `translateX(${direction === 'next' ? '24px' : '-24px'})`
+      : 'translateX(0)',
+    transition: animating ? 'none' : 'opacity .38s ease, transform .38s ease',
+  };
+
+  return (
+    <div
+      style={sl.wrap}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Heading strip */}
+      <div style={sl.strip}>
+        <span style={sl.stripLabel}>🆕 Newest Listings</span>
+        <span style={sl.stripCount}>{current + 1} / {books.length}</span>
+      </div>
+
+      {/* Main slide */}
+      <div style={slideStyle}>
+        {/* Book spine cover */}
+        <div style={{ ...sl.cover, background: bg }}>
+          <div style={{ ...sl.spine, background: 'rgba(0,0,0,0.2)' }} />
+          <div style={sl.coverBody}>
+            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: acc, opacity: 0.85, marginBottom: 6 }}>{abbr}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.3, color: '#fff', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</div>
+            {book.author && (
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.55)', marginTop: 6, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.author}</div>
+            )}
+          </div>
+          <div style={{ position: 'absolute', bottom: 0, left: 10, right: 0, height: 3, background: acc, opacity: 0.5 }} />
+        </div>
+
+        {/* Book info */}
+        <div style={sl.info}>
+          <div style={sl.badges}>
+            <span style={{ ...sl.badge, background: cond.bg, color: cond.color }}>{book.condition}</span>
+            <span style={{ ...sl.badge, background: 'var(--blue-light)', color: 'var(--blue)' }}>{book.subject}</span>
+          </div>
+
+          <h2 style={sl.title}>{book.title}</h2>
+          <div style={sl.author}>by {book.author}</div>
+
+          <p style={sl.desc}>
+            {book.description
+              ? book.description.length > 200
+                ? book.description.slice(0, 200) + '…'
+                : book.description
+              : `A ${book.subject} textbook in ${book.condition?.toLowerCase()} condition, available for exchange.`
+            }
+          </p>
+
+          <div style={sl.footer}>
+            <span style={sl.postedBy}>
+              📌 Posted by {book.owner?.fullName || 'a student'}
+              {book.owner?.department ? ` · ${book.owner.department}` : ''}
+            </span>
+            <button
+              className="btn btn-cta btn-sm"
+              onClick={() => onOpen(book, current)}
+            >
+              View Book →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Prev / Next arrows */}
+      {books.length > 1 && (
+        <>
+          <button onClick={prev} style={{ ...sl.arrow, left: 8 }} aria-label="Previous">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button onClick={next} style={{ ...sl.arrow, right: 8 }} aria-label="Next">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </>
+      )}
+
+      {/* Dot indicators */}
+      {books.length > 1 && (
+        <div style={sl.dots}>
+          {books.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i, i > current ? 'next' : 'prev')}
+              style={{
+                ...sl.dot,
+                background: i === current ? 'var(--orange)' : 'rgba(0,61,165,0.2)',
+                width: i === current ? 22 : 8,
+              }}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Progress bar */}
+      {!paused && books.length > 1 && (
+        <div style={sl.progressWrap}>
+          <div
+            key={current}
+            style={sl.progressBar}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main HomePage ─────────────────────────────────────────────────────────────
 export default function HomePage() {
   const { user } = useAuth();
-  const [data, setData]     = useState({ majorBooks: [], classBooks: [], newArrivals: [] });
+  const [data, setData]       = useState({ majorBooks: [], classBooks: [], newArrivals: [] });
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -24,10 +198,18 @@ export default function HomePage() {
   const profileComplete = user?.department && user?.year && user?.classes?.length > 0;
   const initials = (n = '') => n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-  const allBooks = [...data.majorBooks, ...data.classBooks, ...data.newArrivals];
+  const allBooks    = [...data.majorBooks, ...data.classBooks, ...data.newArrivals];
+  // Slider shows all unique books, newest-first (newArrivals first, then rest)
+  const sliderBooks = [...data.newArrivals, ...data.classBooks, ...data.majorBooks].slice(0, 10);
 
   return (
     <div style={s.page}>
+
+      {/* ── Newest listings slider ── */}
+      {!loading && sliderBooks.length > 0 && (
+        <NewArrivalsSlider books={sliderBooks} onOpen={openBook} />
+      )}
+
       {/* ── Hero / welcome banner ── */}
       <div style={s.hero}>
         <div style={s.heroLeft}>
@@ -79,7 +261,6 @@ export default function HomePage() {
         </div>
       ) : (
         <>
-          {/* ── Tier 1: Major match ── */}
           {data.majorBooks.length > 0 && (
             <Section
               icon="🎓"
@@ -91,7 +272,6 @@ export default function HomePage() {
             />
           )}
 
-          {/* ── Tier 2: Class match ── */}
           {data.classBooks.length > 0 && (
             <Section
               icon="📖"
@@ -103,7 +283,6 @@ export default function HomePage() {
             />
           )}
 
-          {/* ── Tier 3: New arrivals ── */}
           {data.newArrivals.length > 0 && (
             <Section
               icon="🆕"
@@ -115,7 +294,6 @@ export default function HomePage() {
             />
           )}
 
-          {/* Empty state */}
           {allBooks.length === 0 && (
             <div style={s.emptyWrap}>
               <div className="empty-state">
@@ -128,7 +306,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Browse all CTA */}
           {allBooks.length > 0 && (
             <div style={s.browseAll}>
               <Link to="/browse" className="btn btn-outline">View all listings →</Link>
@@ -161,6 +338,148 @@ function Section({ icon, title, sub, books, startIdx, onOpen }) {
   );
 }
 
+// ── Slider styles ─────────────────────────────────────────────────────────────
+const sl = {
+  wrap: {
+    background: '#fff',
+    border: '1.5px solid var(--border)',
+    borderRadius: 'var(--radius-xl)',
+    marginBottom: 20,
+    overflow: 'hidden',
+    position: 'relative',
+    boxShadow: 'var(--shadow)',
+  },
+  strip: {
+    background: 'linear-gradient(90deg, var(--blue) 0%, var(--blue-mid) 100%)',
+    padding: '8px 20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  stripLabel: { fontSize: 12, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' },
+  stripCount: { fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 600 },
+  slide: {
+    display: 'flex',
+    alignItems: 'stretch',
+    minHeight: 190,
+    padding: '20px 60px 20px 20px',
+    gap: 22,
+  },
+  cover: {
+    width: 110,
+    flexShrink: 0,
+    borderRadius: 8,
+    position: 'relative',
+    overflow: 'hidden',
+    display: 'flex',
+    boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+  },
+  spine: {
+    position: 'absolute', left: 0, top: 0, bottom: 0, width: 10,
+  },
+  coverBody: {
+    flex: 1,
+    padding: '16px 10px 14px 20px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+  },
+  info: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 6,
+    minWidth: 0,
+  },
+  badges: { display: 'flex', gap: 6, flexWrap: 'wrap' },
+  badge: {
+    display: 'inline-block',
+    padding: '3px 10px',
+    borderRadius: 20,
+    fontSize: 11,
+    fontWeight: 700,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 800,
+    color: 'var(--text)',
+    letterSpacing: '-0.02em',
+    lineHeight: 1.25,
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+  },
+  author: { fontSize: 13, color: 'var(--muted)', fontWeight: 500 },
+  desc: {
+    fontSize: 13,
+    color: 'var(--muted)',
+    lineHeight: 1.65,
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+  },
+  footer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 4,
+  },
+  postedBy: { fontSize: 12, color: 'var(--muted)', fontWeight: 500 },
+  arrow: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'rgba(255,255,255,0.95)',
+    border: '1.5px solid var(--border)',
+    borderRadius: '50%',
+    width: 34,
+    height: 34,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    color: 'var(--blue)',
+    boxShadow: 'var(--shadow-sm)',
+    transition: 'var(--transition)',
+    zIndex: 2,
+  },
+  dots: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
+    padding: '0 0 12px',
+  },
+  dot: {
+    height: 8,
+    borderRadius: 4,
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all .3s ease',
+    padding: 0,
+  },
+  progressWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 3,
+    background: 'var(--blue-light)',
+  },
+  progressBar: {
+    height: '100%',
+    background: 'var(--orange)',
+    borderRadius: '0 2px 2px 0',
+    animation: 'slideProgress 5s linear forwards',
+  },
+};
+
+// ── Page styles ───────────────────────────────────────────────────────────────
 const s = {
   page: { maxWidth: 1100, margin: '0 auto', padding: '32px 24px' },
   hero: {
