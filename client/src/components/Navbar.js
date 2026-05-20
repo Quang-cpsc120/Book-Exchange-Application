@@ -70,7 +70,12 @@ export default function Navbar() {
             {/* User dropdown */}
             <div style={s.dropWrap} ref={dropRef}>
               <button style={s.avatarBtn} onClick={() => setDropdownOpen(v => !v)}>
-                <div style={s.avatar}>{initials(user?.fullName)}</div>
+                <div style={s.avatar}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+                  </svg>
+                </div>
                 <div style={s.userMeta}>
                   <span style={s.userName}>{user?.fullName}</span>
                   <span style={s.userSub}>{user?.department || user?.studentId}</span>
