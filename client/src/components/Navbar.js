@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import PostBookModal from './PostBookModal';
+import Logo from './Logo';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -46,7 +47,7 @@ export default function Navbar() {
         <div style={s.inner}>
           {/* Logo */}
           <Link to="/" style={s.logo}>
-            <span style={s.logoIcon}>📚</span>
+            <Logo size={34} />
             <span style={s.logoText}>BookSwap</span>
           </Link>
 
