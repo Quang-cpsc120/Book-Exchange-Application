@@ -48,7 +48,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" style={s.logo}>
             <Logo size={34} />
-            <span style={s.logoText}>BookSwap</span>
+            <span style={s.logoText}>Titus</span>
           </Link>
 
           {/* Nav links */}

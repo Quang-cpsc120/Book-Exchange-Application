@@ -26,7 +26,7 @@ export default function MainApp() {
         <div style={s.headerInner}>
           <div style={s.logoArea}>
             <span style={s.logoIcon}>📚</span>
-            <span style={s.logoText}>BookSwap</span>
+            <span style={s.logoText}>Titus</span>
           </div>
 
           {/* Desktop nav */}
@@ -82,7 +82,7 @@ export default function MainApp() {
       {/* ── Footer ── */}
       <footer style={s.footer}>
         <div style={s.footerInner}>
-          <span style={s.footerBrand}>📚 BookSwap</span>
+          <span style={s.footerBrand}>📚 Titus</span>
           <span style={s.footerText}>Student book exchange platform · {new Date().getFullYear()}</span>
         </div>
       </footer>

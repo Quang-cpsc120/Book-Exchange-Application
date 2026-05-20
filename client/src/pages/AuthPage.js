@@ -32,7 +32,7 @@ export default function AuthPage() {
         await login(form.email, form.password);
       } else {
         await register({ ...form, classes });
-        setSuccess('Account created! Welcome to BookSwap.');
+        setSuccess('Account created! Welcome to Titus.');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong. Please try again.');
@@ -50,7 +50,7 @@ export default function AuthPage() {
         <div style={s.panelInner}>
           <div style={s.brandRow}>
             <span style={{ fontSize: 28 }}>📚</span>
-            <span style={s.brandName}>BookSwap</span>
+            <span style={s.brandName}>Titus</span>
           </div>
           <h2 style={s.panelHeading}>Trade textbooks.<br />Save money.<br />Help others.</h2>
           <p style={s.panelSub}>The student marketplace for exchanging university textbooks with fellow students.</p>
@@ -156,7 +156,7 @@ export default function AuthPage() {
             </button>
           </form>
 
-          <p style={s.terms}>By continuing you agree to BookSwap's Terms of Service and Privacy Policy.</p>
+          <p style={s.terms}>By continuing you agree to Titus's Terms of Service and Privacy Policy.</p>
         </div>
       </div>
     </div>

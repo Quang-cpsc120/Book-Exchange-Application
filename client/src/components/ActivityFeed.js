@@ -47,7 +47,7 @@ export default function ActivityFeed() {
     <div>
       <div style={s.pageTop}>
         <h1 style={s.heading}>My Activity</h1>
-        <p style={s.subheading}>Your complete history on BookSwap</p>
+        <p style={s.subheading}>Your complete history on Titus</p>
       </div>
 
       {/* Stats */}

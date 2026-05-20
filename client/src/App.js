@@ -14,7 +14,7 @@ function PrivateRoute({ children }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       <div style={{ textAlign: 'center' }}>
         <div className="spinner spinner-dark" style={{ width: 32, height: 32, margin: '0 auto 12px' }} />
-        <p style={{ color: 'var(--muted)', fontSize: 14 }}>Loading BookSwap…</p>
+        <p style={{ color: 'var(--muted)', fontSize: 14 }}>Loading Titus…</p>
       </div>
     </div>
   );
@@ -46,7 +46,7 @@ export default function App() {
       </main>
       <footer style={footerStyle}>
         <div style={footerInner}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>📚 BookSwap</span>
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>📚 Titus</span>
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>Cal State Fullerton · Student book exchange · {new Date().getFullYear()}</span>
         </div>
       </footer>
