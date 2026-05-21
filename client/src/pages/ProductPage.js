@@ -21,6 +21,8 @@ export default function ProductPage() {
   const [subject, setSubject]       = useState('');
   const [condition, setCondition]   = useState('');
   const [sort, setSort]             = useState('newest');
+  const [classCode, setClassCode]   = useState('');
+  const [debouncedClass, setDebouncedClass] = useState('');
   const [selected, setSelected]     = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [savedMsg, setSavedMsg]     = useState('');
@@ -32,11 +34,16 @@ export default function ProductPage() {
     if (p.get('subject')) setSubject(p.get('subject'));
   }, []);
 
-  // 400ms debounce on search input
+  // 400ms debounce on search + class inputs
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(t);
   }, [search]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedClass(classCode), 400);
+    return () => clearTimeout(t);
+  }, [classCode]);
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -45,6 +52,7 @@ export default function ProductPage() {
       if (debouncedSearch) params.q         = debouncedSearch;
       if (subject)         params.subject   = subject;
       if (condition)       params.condition = condition;
+      if (debouncedClass)  params.classCode = debouncedClass;
       const res = await api.get('/books', { params });
       setBooks(res.data);
     } catch (e) {
@@ -52,16 +60,17 @@ export default function ProductPage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, subject, condition, sort]);
+  }, [debouncedSearch, subject, condition, sort, debouncedClass]);
 
   useEffect(() => { fetchBooks(); }, [fetchBooks]);
 
   const clearAll = () => {
     setSearch(''); setDebouncedSearch('');
     setSubject(''); setCondition(''); setSort('newest');
+    setClassCode(''); setDebouncedClass('');
   };
 
-  const hasFilters = !!(search || subject || condition || sort !== 'newest');
+  const hasFilters = !!(search || subject || condition || sort !== 'newest' || classCode);
 
   const saveSearch = async () => {
     if (!hasFilters) return;
@@ -122,11 +131,11 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {/* Subject */}
+          {/* Major */}
           <div style={s.sideSection}>
-            <label style={s.sideLabel}>Subject</label>
+            <label style={s.sideLabel}>Major</label>
             <select style={s.filterSelect} value={subject} onChange={e => setSubject(e.target.value)}>
-              <option value="">All subjects</option>
+              <option value="">All majors</option>
               {SUBJECTS.map(sub => <option key={sub}>{sub}</option>)}
             </select>
           </div>
@@ -148,11 +157,33 @@ export default function ProductPage() {
             </select>
           </div>
 
+          {/* Class */}
+          <div style={s.sideSection}>
+            <label style={s.sideLabel}>Class</label>
+            <div style={s.searchWrap}>
+              <svg style={s.searchIcon} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M10 2L2 6l8 4 8-4-8-4zM2 14l8 4 8-4M2 10l8 4 8-4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <input
+                style={s.searchInput}
+                placeholder="e.g. CPSC 120, MATH 150…"
+                value={classCode}
+                onChange={e => setClassCode(e.target.value)}
+              />
+              {classCode && (
+                <button style={s.clearX} onClick={() => setClassCode('')}>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M2 2l12 12M14 2L2 14"/></svg>
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Active chips */}
-          {(subject || condition) && (
+          {(subject || condition || classCode) && (
             <div style={s.chips}>
-              {subject   && <Chip label={subject}   onRemove={() => setSubject('')} />}
-              {condition && <Chip label={condition} onRemove={() => setCondition('')} />}
+              {subject   && <Chip label={subject}             onRemove={() => setSubject('')} />}
+              {condition && <Chip label={condition}           onRemove={() => setCondition('')} />}
+              {classCode && <Chip label={`Class: ${classCode}`} onRemove={() => setClassCode('')} />}
             </div>
           )}
 

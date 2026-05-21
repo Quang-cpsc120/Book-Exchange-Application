@@ -9,18 +9,29 @@ const { protect } = require('../middleware/auth');
 // GET /api/books — browse all available books (with search & filter)
 router.get('/', protect, async (req, res) => {
   try {
-    const { q, subject, condition, sort } = req.query;
+    const { q, subject, condition, sort, classCode } = req.query;
     const filter = { available: true, owner: { $ne: req.user._id } };
 
-    if (subject)   filter.subject = subject;
+    if (subject)   filter.subject   = subject;
     if (condition) filter.condition = condition;
+
+    // Build text conditions — q and classCode must both match (AND)
+    const textConds = [];
     if (q) {
-      filter.$or = [
+      textConds.push({ $or: [
         { title:   { $regex: q, $options: 'i' } },
         { author:  { $regex: q, $options: 'i' } },
         { subject: { $regex: q, $options: 'i' } },
-      ];
+      ]});
     }
+    if (classCode) {
+      textConds.push({ $or: [
+        { title:       { $regex: classCode, $options: 'i' } },
+        { description: { $regex: classCode, $options: 'i' } },
+      ]});
+    }
+    if (textConds.length === 1) Object.assign(filter, textConds[0]);
+    if (textConds.length  > 1) filter.$and = textConds;
 
     const sortMap = { newest: { createdAt: -1 }, condition: { condition: 1 } };
     const sortBy = sortMap[sort] || { createdAt: -1 };
