@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Titus — App Wireframe</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #050f2b;
+    color: #a8c8ff;
+    font-family: 'Inter', sans-serif;
+    padding: 48px 32px 80px;
+    min-height: 100vh;
+    background-image:
+      linear-gradient(rgba(0,80,200,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,80,200,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ── Title ── */
+  .doc-title {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .doc-title h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .doc-title p {
+    font-size: 13px;
+    color: #4d7ab8;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+  .doc-title .version {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 12px;
+    border: 1px solid #1a4080;
+    border-radius: 20px;
+    font-size: 11px;
+    color: #4d9fff;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: #3a6aaa;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #1a3a70, transparent);
+  }
+
+  /* ── Page grid ── */
+  .pages-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  .pages-grid.single { grid-template-columns: 1fr; }
+  .pages-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* ── Screen frame ── */
+  .screen {
+    border: 1.5px solid #1a4488;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,80,200,0.15), inset 0 0 0 1px rgba(100,160,255,0.05);
+  }
+  .screen-title {
+    background: #0a1f4e;
+    border-bottom: 1.5px solid #1a4488;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .screen-title h2 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #7ab0ff;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .screen-title .screen-id {
+    font-size: 10px;
+    color: #2d5490;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .screen-body { padding: 14px; background: #06122e; }
+
+  /* ── Wireframe components ── */
+  .wf-navbar {
+    background: #0a1f4e;
+    border: 1.5px solid #1e4d99;
+    border-radius: 5px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .wf-logo-box {
+    width: 22px; height: 22px;
+    border: 1.5px solid #4d9fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .wf-logo-box::after { content: ''; width: 8px; height: 1.5px; background: #4d9fff; border-radius: 1px; }
+  .wf-brand { font-size: 11px; font-weight: 700; color: #4d9fff; margin-right: 8px; }
+  .wf-nav-links { display: flex; gap: 6px; flex: 1; }
+  .wf-nav-link {
+    padding: 3px 8px; border-radius: 3px;
+    font-size: 9px; color: #4d7ab8;
+    border: 1px solid #1a3a70; background: transparent;
+  }
+  .wf-nav-link.active { color: #4d9fff; border-color: #4d9fff; background: rgba(77,159,255,0.08); }
+  .wf-nav-right { display: flex; gap: 6px; align-items: center; margin-left: auto; }
+  .wf-btn-orange {
+    padding: 3px 9px; border-radius: 3px;
+    font-size: 9px; color: #ff8c30;
+    border: 1.5px solid #ff6b00; background: rgba(255,107,0,0.1);
+    white-space: nowrap;
+  }
+  .wf-avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid #4d7ab8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: #4d7ab8;
+  }
+
+  .wf-box {
+    border: 1.5px solid #1a4488;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: rgba(10,31,78,0.5);
+    position: relative;
+  }
+  .wf-box.accent { border-color: #2b6cc8; background: rgba(0,61,165,0.15); }
+  .wf-box.orange { border-color: #804000; background: rgba(80,40,0,0.2); }
+  .wf-box.dashed { border-style: dashed; }
+
+  .wf-label {
+    font-size: 9px;
+    color: #3a6aaa;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .wf-text { font-size: 10px; color: #6a9add; }
+  .wf-text.bright { color: #a8c8ff; font-weight: 600; }
+  .wf-text.muted { color: #2d5490; font-size: 9px; }
+
+  .wf-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .wf-row > * { flex: 1; margin-bottom: 0; }
+  .wf-row .w2 { flex: 2; }
+  .wf-row .w3 { flex: 3; }
+
+  .wf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+  .wf-grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+  .wf-grid.cols5 { grid-template-columns: repeat(5, 1fr); }
+  .wf-grid.cols6 { grid-template-columns: repeat(6, 1fr); }
+
+  .wf-book-card {
+    border: 1.5px solid #1a4488;
+    border-radius: 5px;
+    background: #06122e;
+    overflow: hidden;
+  }
+  .wf-book-cover {
+    height: 52px;
+    background: linear-gradient(135deg, #0a3070 0%, #0d4090 100%);
+    border-bottom: 1px solid #1a4488;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wf-book-cover.orange { background: linear-gradient(135deg, #6b2800 0%, #8b3800 100%); }
+  .wf-book-cover::after {
+    content: '≡';
+    font-size: 18px;
+    color: rgba(255,255,255,0.2);
+  }
+  .wf-book-info { padding: 5px 6px; }
+
+  .wf-hero {
+    border: 1.5px solid #2b6cc8;
+    border-radius: 5px;
+    background: linear-gradient(135deg, rgba(0,29,90,0.8) 0%, rgba(0,45,122,0.8) 100%);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .wf-hero-left { display: flex; align-items: center; gap: 8px; }
+  .wf-hero-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid #ff6b00;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: #ff8c30; flex-shrink: 0;
+  }
+  .wf-stats-box {
+    border: 1px solid rgba(77,159,255,0.2);
+    border-radius: 4px;
+    padding: 6px 12px;
+    display: flex; gap: 12px;
+    background: rgba(77,159,255,0.05);
+  }
+  .wf-stat { text-align: center; }
+
+  .wf-slider {
+    border: 1.5px solid #1a4488;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .wf-slider-header {
+    background: linear-gradient(90deg, #0d3070, #1a4488);
+    padding: 5px 10px;
+    display: flex; justify-content: space-between;
+  }
+  .wf-slider-body {
+    padding: 8px 10px;
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(10,31,78,0.4);
+  }
+  .wf-slider-cover {
+    width: 40px; height: 58px;
+    border-radius: 3px;
+    background: linear-gradient(135deg, #0d3070 0%, #1a4488 100%);
+    border: 1px solid #2b6cc8; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: rgba(255,255,255,0.15);
+  }
+  .wf-slider-dots { display: flex; gap: 3px; justify-content: center; padding: 5px 0 3px; }
+  .wf-dot { width: 6px; height: 6px; border-radius: 3px; background: #1a4488; }
+  .wf-dot.active { background: #ff6b00; width: 16px; }
+
+  .wf-tab-bar {
+    display: flex; gap: 0;
+    border-bottom: 1.5px solid #1a4488;
+    margin-bottom: 8px;
+  }
+  .wf-tab {
+    padding: 5px 12px;
+    font-size: 9px; color: #3a6aaa;
+    border-bottom: 2px solid transparent;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .wf-tab.active { color: #4d9fff; border-bottom-color: #4d9fff; }
+
+  .wf-search-bar {
+    border: 1.5px solid #1a4488;
+    border-radius: 5px;
+    padding: 7px 10px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(10,31,78,0.4);
+  }
+  .wf-search-icon { font-size: 10px; color: #3a6aaa; }
+
+  .wf-form-field {
+    border: 1.5px solid #1a4488;
+    border-radius: 4px;
+    height: 22px;
+    background: rgba(10,31,78,0.4);
+    margin-bottom: 5px;
+  }
+  .wf-btn {
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 9px;
+    border: 1.5px solid #1e4d99;
+    color: #4d9fff;
+    background: rgba(0,61,165,0.15);
+    white-space: nowrap;
+    display: inline-flex; align-items: center;
+  }
+  .wf-btn.cta { border-color: #804000; color: #ff8c30; background: rgba(80,40,0,0.2); }
+  .wf-btn.full { width: 100%; justify-content: center; }
+
+  .wf-chart-bar {
+    display: flex; gap: 4px; align-items: flex-end; height: 40px; padding: 0 4px;
+  }
+  .wf-bar {
+    flex: 1; border-radius: 2px 2px 0 0;
+    background: linear-gradient(180deg, #1e4d99 0%, #0d3070 100%);
+    border: 1px solid #2b6cc8;
+  }
+
+  .wf-divider {
+    height: 1px; background: #0d2660;
+    margin: 6px 0;
+  }
+
+  .wf-tag {
+    display: inline-block;
+    padding: 1px 6px; border-radius: 10px;
+    font-size: 8px; font-family: 'Share Tech Mono', monospace;
+    border: 1px solid #1a4488; color: #3a6aaa;
+    margin: 1px;
+  }
+  .wf-tag.blue { border-color: #2b6cc8; color: #4d9fff; }
+  .wf-tag.orange { border-color: #804000; color: #ff8c30; }
+
+  .wf-footer {
+    background: #0a1f4e;
+    border: 1.5px solid #1e4d99;
+    border-radius: 4px;
+    padding: 6px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px;
+  }
+
+  .wf-line { height: 6px; border-radius: 3px; background: #1a3a70; margin-bottom: 4px; }
+  .wf-line.w80 { width: 80%; }
+  .wf-line.w60 { width: 60%; }
+  .wf-line.w40 { width: 40%; }
+  .wf-line.w30 { width: 30%; }
+  .wf-line.bright { background: #2b5498; }
+
+  /* ── Stat card ── */
+  .wf-stat-card {
+    border: 1.5px solid #1a4488;
+    border-radius: 5px;
+    padding: 7px 8px;
+    background: rgba(10,31,78,0.4);
+    display: flex; align-items: stretch; overflow: hidden;
+  }
+  .wf-card-accent { width: 3px; background: #2b6cc8; margin-right: 6px; flex-shrink: 0; border-radius: 2px; }
+  .wf-card-accent.orange { background: #ff6b00; }
+  .wf-card-accent.green { background: #22c55e; }
+
+  /* ── Arrow connectors ── */
+  .flow-arrows {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 0 12px;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    padding: 5px 14px;
+    border: 1.5px solid #2b6cc8;
+    border-radius: 4px;
+    font-size: 10px;
+    color: #4d9fff;
+    font-family: 'Share Tech Mono', monospace;
+    background: rgba(0,61,165,0.12);
+    letter-spacing: 0.04em;
+  }
+  .flow-arrow { font-size: 12px; color: #2b6cc8; }
+
+  .page-section { max-width: 1300px; margin: 0 auto 48px; }
+  .col-span-2 { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+
+<!-- ── Title ── -->
+<div class="doc-title">
+  <h1>TITUS — Application Wireframe</h1>
+  <p>CAL STATE FULLERTON · STUDENT BOOK EXCHANGE PLATFORM</p>
+  <span class="version">v1.0 · BLUEPRINT</span>
+</div>
+
+<!-- ── Navigation Flow ── -->
+<div class="page-section">
+  <div class="section-label">00 · PAGE FLOW</div>
+  <div class="flow-arrows">
+    <div class="flow-node">AUTH PAGE</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">HOME PAGE</div>
+    <div class="flow-arrow">⇆</div>
+    <div class="flow-node">BROWSE PAGE</div>
+    <div class="flow-arrow">⇆</div>
+    <div class="flow-node">PROFILE PAGE</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">ADMIN DASHBOARD</div>
+  </div>
+</div>
+
+<!-- ── Screen 1: Auth Page ── -->
+<div class="page-section">
+  <div class="section-label">01 · AUTH PAGE — Login / Register</div>
+  <div class="pages-grid single">
+    <div class="screen">
+      <div class="screen-title">
+        <h2>Auth Page</h2>
+        <span class="screen-id">SCR-01</span>
+      </div>
+      <div class="screen-body">
+        <div class="wf-row">
+          <!-- Left Panel -->
+          <div class="wf-box accent w2" style="padding:14px 12px; min-height:260px;">
+            <div class="wf-label">Brand Panel</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+              <div style="width:28px;height:28px;border-radius:50%;border:1.5px solid #4d9fff;"></div>
+              <div class="wf-text bright" style="font-size:14px;font-weight:800;">Titus</div>
+            </div>
+            <div class="wf-line bright w80" style="height:10px;margin-bottom:5px;"></div>
+            <div class="wf-line w60" style="margin-bottom:5px;"></div>
+            <div class="wf-line w80" style="margin-bottom:14px;"></div>
+            <div class="wf-label" style="margin-bottom:8px;">Features</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+              <div style="width:18px;height:18px;border-radius:4px;border:1px solid #2b6cc8;flex-shrink:0;"></div>
+              <div class="wf-line w60" style="margin:0;flex:1;"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+              <div style="width:18px;height:18px;border-radius:4px;border:1px solid #2b6cc8;flex-shrink:0;"></div>
+              <div class="wf-line w60" style="margin:0;flex:1;"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="width:18px;height:18px;border-radius:4px;border:1px solid #2b6cc8;flex-shrink:0;"></div>
+              <div class="wf-line w60" style="margin:0;flex:1;"></div>
+            </div>
+          </div>
+          <!-- Right Panel -->
+          <div class="wf-box w3" style="padding:14px 12px;">
+            <div class="wf-label">Form Panel</div>
+            <div class="wf-line bright" style="width:70%;height:9px;margin-bottom:4px;"></div>
+            <div class="wf-line w40" style="margin-bottom:12px;"></div>
+            <div class="wf-label">Email</div>
+            <div class="wf-form-field"></div>
+            <div class="wf-label">Password</div>
+            <div class="wf-form-field" style="margin-bottom:10px;"></div>
+            <div class="wf-btn cta full" style="padding:8px;font-size:10px;margin-bottom:8px;">Sign In / Create Account</div>
+            <div class="wf-divider"></div>
+            <div class="wf-label" style="margin-top:6px;">Register Fields (extra)</div>
+            <div class="wf-row" style="margin-top:4px;">
+              <div><div class="wf-label">Full Name</div><div class="wf-form-field"></div></div>
+              <div><div class="wf-label">Student ID</div><div class="wf-form-field"></div></div>
+            </div>
+            <div class="wf-row">
+              <div><div class="wf-label">Department</div><div class="wf-form-field"></div></div>
+              <div><div class="wf-label">Year</div><div class="wf-form-field"></div></div>
+            </div>
+            <div class="wf-label">Classes (tags)</div>
+            <div style="border:1.5px dashed #1a4488;border-radius:4px;padding:5px;min-height:24px;">
+              <span class="wf-tag blue">CPSC 120</span>
+              <span class="wf-tag blue">MATH 150</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Screen 2: Home Page ── -->
+<div class="page-section">
+  <div class="section-label">02 · HOME PAGE — Personalized Feed</div>
+  <div class="pages-grid single">
+    <div class="screen">
+      <div class="screen-title">
+        <h2>Home Page</h2>
+        <span class="screen-id">SCR-02</span>
+      </div>
+      <div class="screen-body">
+        <!-- Navbar -->
+        <div class="wf-navbar">
+          <div class="wf-logo-box"></div>
+          <div class="wf-brand">Titus</div>
+          <div class="wf-nav-links">
+            <div class="wf-nav-link active">Home</div>
+            <div class="wf-nav-link">Browse Books</div>
+          </div>
+          <div class="wf-nav-right">
+            <div class="wf-btn-orange">+ Post a Book</div>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div class="wf-avatar">👤</div>
+              <div style="font-size:8px;color:#4d7ab8;">Name ▾</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Welcome Hero -->
+        <div class="wf-hero">
+          <div class="wf-hero-left">
+            <div class="wf-hero-avatar">👤</div>
+            <div>
+              <div class="wf-line bright w60" style="height:8px;margin-bottom:4px;"></div>
+              <div style="display:flex;gap:4px;">
+                <span class="wf-tag blue">CS</span>
+                <span class="wf-tag blue">Junior</span>
+                <span class="wf-tag blue">3 classes</span>
+              </div>
+            </div>
+          </div>
+          <div class="wf-stats-box">
+            <div class="wf-stat"><div class="wf-text bright" style="font-size:14px;font-weight:800;">9</div><div class="wf-text muted">Listed</div></div>
+            <div style="width:1px;background:rgba(77,159,255,0.2);"></div>
+            <div class="wf-stat"><div class="wf-text bright" style="font-size:14px;font-weight:800;">0</div><div class="wf-text muted">Exchanged</div></div>
+            <div style="width:1px;background:rgba(77,159,255,0.2);"></div>
+            <div class="wf-stat"><div class="wf-text bright" style="font-size:14px;font-weight:800;">10</div><div class="wf-text muted">For you</div></div>
+          </div>
+        </div>
+
+        <!-- Newest Listings Slider -->
+        <div class="wf-slider">
+          <div class="wf-slider-header">
+            <span style="font-size:9px;color:#7ab0ff;font-family:'Share Tech Mono',monospace;">🆕 NEWEST LISTINGS</span>
+            <span style="font-size:9px;color:#2d5490;font-family:'Share Tech Mono',monospace;">1 / 10</span>
+          </div>
+          <div class="wf-slider-body">
+            <div style="font-size:12px;color:#2d5490;">‹</div>
+            <div class="wf-slider-cover">▦</div>
+            <div style="flex:1;">
+              <div style="display:flex;gap:4px;margin-bottom:4px;">
+                <span class="wf-tag orange">Like New</span>
+                <span class="wf-tag blue">Comp Sci</span>
+              </div>
+              <div class="wf-line bright w80" style="height:8px;margin-bottom:3px;"></div>
+              <div class="wf-line w40" style="margin-bottom:5px;"></div>
+              <div class="wf-line w80" style="margin-bottom:2px;"></div>
+              <div class="wf-line w60" style="margin-bottom:5px;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="wf-line w40" style="margin:0;"></div>
+                <div class="wf-btn cta" style="padding:3px 8px;">View Book →</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#2d5490;">›</div>
+          </div>
+          <div class="wf-slider-dots">
+            <div class="wf-dot active"></div>
+            <div class="wf-dot"></div><div class="wf-dot"></div>
+            <div class="wf-dot"></div><div class="wf-dot"></div>
+          </div>
+          <div style="height:3px;background:#0d2660;"><div style="width:30%;height:100%;background:#ff6b00;border-radius:2px;"></div></div>
+        </div>
+
+        <!-- Profile Nudge -->
+        <div class="wf-box orange" style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:14px;">💡</span>
+          <div style="flex:1;"><div class="wf-line w60" style="margin-bottom:3px;"></div><div class="wf-line w40"></div></div>
+          <div class="wf-btn cta">Update profile →</div>
+        </div>
+
+        <!-- Book Sections -->
+        <div style="margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <div><div class="wf-line bright" style="width:160px;height:7px;margin-bottom:3px;"></div><div class="wf-line w60" style="width:120px;"></div></div>
+            <div class="wf-tag blue">4 books</div>
+          </div>
+          <div class="wf-grid cols5" style="margin-bottom:12px;">
+            <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <div><div class="wf-line bright" style="width:140px;height:7px;margin-bottom:3px;"></div><div class="wf-line w60" style="width:100px;"></div></div>
+            <div class="wf-tag blue">6 books</div>
+          </div>
+          <div class="wf-grid cols5">
+            <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+            <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="wf-footer">
+          <span style="font-size:9px;color:#4d9fff;font-weight:700;">📚 Titus</span>
+          <span style="font-size:8px;color:#2d5490;">Cal State Fullerton · Student Book Exchange</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Screens 3 & 4 side by side ── -->
+<div class="page-section">
+  <div class="section-label">03 · BROWSE PAGE &amp; 04 · PROFILE PAGE</div>
+  <div class="pages-grid">
+
+    <!-- Browse Page -->
+    <div class="screen">
+      <div class="screen-title">
+        <h2>Browse / Product Page</h2>
+        <span class="screen-id">SCR-03</span>
+      </div>
+      <div class="screen-body">
+        <div class="wf-navbar" style="margin-bottom:10px;">
+          <div class="wf-logo-box"></div>
+          <div class="wf-brand">Titus</div>
+          <div class="wf-nav-links">
+            <div class="wf-nav-link">Home</div>
+            <div class="wf-nav-link active">Browse Books</div>
+          </div>
+          <div class="wf-nav-right">
+            <div class="wf-btn-orange">+ Post a Book</div>
+            <div class="wf-avatar">👤</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;">
+          <div><div class="wf-line bright" style="width:120px;height:9px;margin-bottom:3px;"></div><div class="wf-line w60" style="width:180px;"></div></div>
+          <div class="wf-tag">10 listings</div>
+        </div>
+
+        <div class="wf-search-bar">
+          <div class="wf-search-icon">🔍</div>
+          <div class="wf-line w80" style="flex:1;margin:0;"></div>
+        </div>
+
+        <div class="wf-row" style="margin-bottom:8px;">
+          <div class="wf-box" style="padding:5px 8px;margin:0;">
+            <div class="wf-label">Subject</div>
+            <div class="wf-form-field" style="height:18px;margin:0;"></div>
+          </div>
+          <div class="wf-box" style="padding:5px 8px;margin:0;">
+            <div class="wf-label">Condition</div>
+            <div class="wf-form-field" style="height:18px;margin:0;"></div>
+          </div>
+          <div class="wf-box" style="padding:5px 8px;margin:0;">
+            <div class="wf-label">Sort By</div>
+            <div class="wf-form-field" style="height:18px;margin:0;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <span class="wf-tag orange">Computer Science ×</span>
+          <span class="wf-tag orange">Like New ×</span>
+        </div>
+
+        <div class="wf-grid" style="margin-bottom:8px;">
+          <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60" style="margin-bottom:4px;"></div><div style="display:flex;justify-content:space-between;"><span class="wf-tag blue" style="font-size:7px;">Good</span><div class="wf-line w30" style="margin:0;"></div></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60" style="margin-bottom:4px;"></div><div style="display:flex;justify-content:space-between;"><span class="wf-tag orange" style="font-size:7px;">New</span><div class="wf-line w30" style="margin:0;"></div></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60" style="margin-bottom:4px;"></div><div style="display:flex;justify-content:space-between;"><span class="wf-tag blue" style="font-size:7px;">Fair</span><div class="wf-line w30" style="margin:0;"></div></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60" style="margin-bottom:4px;"></div><div style="display:flex;justify-content:space-between;"><span class="wf-tag blue" style="font-size:7px;">Good</span><div class="wf-line w30" style="margin:0;"></div></div></div></div>
+        </div>
+        <div class="wf-grid">
+          <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover orange"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+        </div>
+        <div class="wf-footer" style="margin-top:10px;">
+          <span style="font-size:9px;color:#4d9fff;font-weight:700;">📚 Titus</span>
+          <span style="font-size:8px;color:#2d5490;">Cal State Fullerton</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div class="screen">
+      <div class="screen-title">
+        <h2>Profile Page</h2>
+        <span class="screen-id">SCR-04</span>
+      </div>
+      <div class="screen-body">
+        <div class="wf-navbar" style="margin-bottom:10px;">
+          <div class="wf-logo-box"></div>
+          <div class="wf-brand">Titus</div>
+          <div class="wf-nav-links">
+            <div class="wf-nav-link">Home</div>
+            <div class="wf-nav-link">Browse Books</div>
+          </div>
+          <div class="wf-nav-right">
+            <div class="wf-btn-orange">+ Post a Book</div>
+            <div class="wf-avatar">👤</div>
+          </div>
+        </div>
+
+        <!-- Profile header -->
+        <div class="wf-box accent" style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="width:40px;height:40px;border-radius:50%;border:1.5px solid #4d9fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;">👤</div>
+          <div style="flex:1;">
+            <div class="wf-line bright w60" style="height:8px;margin-bottom:4px;"></div>
+            <div style="display:flex;gap:4px;">
+              <span class="wf-tag">STU2024001</span>
+              <span class="wf-tag blue">Comp Sci</span>
+              <span class="wf-tag">Junior</span>
+            </div>
+          </div>
+          <div class="wf-stats-box" style="padding:5px 10px;gap:8px;">
+            <div class="wf-stat"><div class="wf-text bright" style="font-size:12px;font-weight:800;">9</div><div class="wf-text muted">Books</div></div>
+            <div style="width:1px;background:rgba(77,159,255,0.2);"></div>
+            <div class="wf-stat"><div class="wf-text bright" style="font-size:12px;font-weight:800;">0</div><div class="wf-text muted">Exchanges</div></div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="wf-tab-bar">
+          <div class="wf-tab active">Profile</div>
+          <div class="wf-tab">My Listings</div>
+          <div class="wf-tab">Requests</div>
+          <div class="wf-tab">Activity</div>
+        </div>
+
+        <!-- Profile Tab Content -->
+        <div class="wf-row">
+          <div class="wf-box w2" style="padding:10px;">
+            <div class="wf-label" style="margin-bottom:6px;">Personal Information</div>
+            <div class="wf-label">Full Name</div>
+            <div class="wf-form-field"></div>
+            <div class="wf-row">
+              <div><div class="wf-label">Department</div><div class="wf-form-field"></div></div>
+              <div><div class="wf-label">Year</div><div class="wf-form-field"></div></div>
+            </div>
+            <div class="wf-label">Bio</div>
+            <div class="wf-form-field" style="height:36px;margin-bottom:6px;"></div>
+            <div class="wf-label">My Classes</div>
+            <div style="border:1.5px dashed #1a4488;border-radius:4px;padding:4px;margin-bottom:8px;">
+              <span class="wf-tag blue">CPSC 120</span>
+              <span class="wf-tag blue">MATH 150</span>
+              <span class="wf-tag">+ Add</span>
+            </div>
+            <div class="wf-btn" style="background:rgba(0,61,165,0.2);border-color:#2b6cc8;color:#4d9fff;">Save Changes</div>
+          </div>
+          <div class="wf-box">
+            <div class="wf-label" style="margin-bottom:6px;">Account</div>
+            <div style="margin-bottom:5px;"><div class="wf-text muted">Student ID</div><div class="wf-line w80" style="margin-top:2px;"></div></div>
+            <div class="wf-divider"></div>
+            <div style="margin-bottom:5px;"><div class="wf-text muted">Email</div><div class="wf-line w80" style="margin-top:2px;"></div></div>
+            <div class="wf-divider"></div>
+            <div><div class="wf-text muted">Member since</div><div class="wf-line w60" style="margin-top:2px;"></div></div>
+          </div>
+        </div>
+
+        <!-- My Listings tab preview -->
+        <div class="wf-divider" style="margin-top:4px;"></div>
+        <div class="wf-label" style="margin-top:6px;margin-bottom:6px;">My Listings Tab (grid)</div>
+        <div class="wf-grid" style="margin-bottom:0;">
+          <div class="wf-book-card"><div class="wf-book-cover" style="height:36px;"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover orange" style="height:36px;"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover" style="height:36px;"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+          <div class="wf-book-card"><div class="wf-book-cover orange" style="height:36px;"></div><div class="wf-book-info"><div class="wf-line w80" style="margin-bottom:2px;"></div><div class="wf-line w60"></div></div></div>
+        </div>
+        <div class="wf-footer" style="margin-top:10px;">
+          <span style="font-size:9px;color:#4d9fff;font-weight:700;">📚 Titus</span>
+          <span style="font-size:8px;color:#2d5490;">Cal State Fullerton</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Screen 5: Admin Dashboard ── -->
+<div class="page-section">
+  <div class="section-label">05 · ADMIN DASHBOARD — Analytics &amp; Reports</div>
+  <div class="pages-grid single">
+    <div class="screen">
+      <div class="screen-title">
+        <h2>Admin Dashboard</h2>
+        <span class="screen-id">SCR-05 · Admin only</span>
+      </div>
+      <div class="screen-body">
+        <div class="wf-navbar" style="margin-bottom:10px;">
+          <div class="wf-logo-box"></div>
+          <div class="wf-brand">Titus</div>
+          <div class="wf-nav-links">
+            <div class="wf-nav-link">Home</div>
+            <div class="wf-nav-link">Browse Books</div>
+          </div>
+          <div class="wf-nav-right">
+            <div class="wf-btn-orange">+ Post a Book</div>
+            <div class="wf-avatar">👤</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;">
+          <div><div class="wf-line bright" style="width:160px;height:10px;margin-bottom:4px;"></div><div class="wf-line w60" style="width:240px;"></div></div>
+          <div class="wf-btn">⟳ Refresh</div>
+        </div>
+
+        <div class="wf-tab-bar">
+          <div class="wf-tab active">Overview</div>
+          <div class="wf-tab">Users</div>
+          <div class="wf-tab">Search Analytics</div>
+          <div class="wf-tab">Exchanges</div>
+          <div class="wf-tab">Reports</div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="wf-grid cols6" style="margin-bottom:10px;">
+          <div class="wf-stat-card"><div class="wf-card-accent"></div><div><div class="wf-line bright w80" style="height:10px;margin-bottom:3px;"></div><div class="wf-text muted">Total Users</div></div></div>
+          <div class="wf-stat-card"><div class="wf-card-accent"></div><div><div class="wf-line bright w80" style="height:10px;margin-bottom:3px;"></div><div class="wf-text muted">Books Listed</div></div></div>
+          <div class="wf-stat-card"><div class="wf-card-accent"></div><div><div class="wf-line bright w80" style="height:10px;margin-bottom:3px;"></div><div class="wf-text muted">Exchanges</div></div></div>
+          <div class="wf-stat-card"><div class="wf-card-accent orange"></div><div><div class="wf-line bright w80" style="height:10px;margin-bottom:3px;"></div><div class="wf-text muted">Pending</div></div></div>
+          <div class="wf-stat-card"><div class="wf-card-accent green"></div><div><div class="wf-line bright w80" style="height:10px;margin-bottom:3px;"></div><div class="wf-text muted">Completed</div></div></div>
+          <div class="wf-stat-card"><div class="wf-card-accent" style="background:#6366f1;"></div><div><div class="wf-line bright w80" style="height:10px;margin-bottom:3px;"></div><div class="wf-text muted">Searches</div></div></div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="wf-row">
+          <div class="wf-box w3" style="padding:10px;">
+            <div class="wf-label" style="margin-bottom:8px;">Daily Activity (14 days) — Line Chart</div>
+            <div style="height:60px;border:1px solid #1a3a70;border-radius:3px;padding:5px;display:flex;align-items:flex-end;gap:2px;">
+              <div style="flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;" class="wf-bar" style="height:40%;"></div>
+              <div style="height:55%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:30%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:70%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:45%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:80%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:60%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:90%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:50%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:65%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+            </div>
+          </div>
+          <div class="wf-box" style="padding:10px;">
+            <div class="wf-label" style="margin-bottom:8px;">Users Table Preview</div>
+            <div style="border:1px solid #1a3a70;border-radius:3px;overflow:hidden;">
+              <div style="background:#0a1f4e;padding:4px 6px;display:flex;gap:8px;">
+                <div class="wf-line w30" style="margin:0;flex:1;height:5px;"></div>
+                <div class="wf-line w30" style="margin:0;flex:1;height:5px;"></div>
+                <div class="wf-line w30" style="margin:0;flex:1;height:5px;"></div>
+              </div>
+              <div style="padding:3px 6px;border-bottom:1px solid #0d2660;display:flex;gap:8px;"><div class="wf-line w80" style="margin:0;flex:1;"></div><div class="wf-line w40" style="margin:0;flex:1;"></div><div class="wf-line w60" style="margin:0;flex:1;"></div></div>
+              <div style="padding:3px 6px;border-bottom:1px solid #0d2660;display:flex;gap:8px;"><div class="wf-line w80" style="margin:0;flex:1;"></div><div class="wf-line w40" style="margin:0;flex:1;"></div><div class="wf-line w60" style="margin:0;flex:1;"></div></div>
+              <div style="padding:3px 6px;display:flex;gap:8px;"><div class="wf-line w80" style="margin:0;flex:1;"></div><div class="wf-line w40" style="margin:0;flex:1;"></div><div class="wf-line w60" style="margin:0;flex:1;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports row -->
+        <div class="wf-row" style="margin-top:4px;">
+          <div class="wf-box" style="padding:10px;">
+            <div class="wf-label" style="margin-bottom:6px;">Top Search Terms</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><div class="wf-line w60" style="margin:0;"></div><div class="wf-tag blue">12x</div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;"><div class="wf-line w40" style="margin:0;"></div><div class="wf-tag blue">8x</div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;"><div class="wf-line w50" style="margin:0;width:50%;"></div><div class="wf-tag blue">5x</div></div>
+            </div>
+          </div>
+          <div class="wf-box" style="padding:10px;">
+            <div class="wf-label" style="margin-bottom:6px;">Demand Gaps (0 results)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;"><div class="wf-line w60" style="margin:0;background:#4a1a00;"></div><div class="wf-tag orange">3x</div></div>
+              <div style="display:flex;justify-content:space-between;"><div class="wf-line w40" style="margin:0;background:#4a1a00;"></div><div class="wf-tag orange">2x</div></div>
+            </div>
+          </div>
+          <div class="wf-box" style="padding:10px;">
+            <div class="wf-label" style="margin-bottom:6px;">Monthly Volume — Bar Chart</div>
+            <div style="height:44px;border:1px solid #1a3a70;border-radius:3px;padding:3px;display:flex;align-items:flex-end;gap:2px;">
+              <div style="height:40%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:65%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:80%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:55%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:90%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+              <div style="height:70%;flex:1;background:linear-gradient(180deg,#2b6cc8,#0d3070);border-radius:1px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wf-footer" style="margin-top:10px;">
+          <span style="font-size:9px;color:#4d9fff;font-weight:700;">📚 Titus</span>
+          <span style="font-size:8px;color:#2d5490;">Cal State Fullerton · Admin View</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Component Legend ── -->
+<div class="page-section">
+  <div class="section-label">06 · COMPONENT LEGEND</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;max-width:1300px;margin:0 auto;">
+    <div class="wf-box" style="padding:10px;">
+      <div class="wf-label" style="margin-bottom:5px;">Navigation</div>
+      <div class="wf-text" style="font-size:9px;line-height:1.8;">
+        • Sticky top navbar<br>• Logo + brand name<br>• Page links (underline active)<br>• Orange CTA button<br>• User icon + dropdown
+      </div>
+    </div>
+    <div class="wf-box" style="padding:10px;">
+      <div class="wf-label" style="margin-bottom:5px;">Book Card</div>
+      <div class="wf-text" style="font-size:9px;line-height:1.8;">
+        • Colored cover (blue/orange)<br>• Subject abbreviation<br>• Title + Author<br>• Condition badge<br>• Owner student ID
+      </div>
+    </div>
+    <div class="wf-box" style="padding:10px;">
+      <div class="wf-label" style="margin-bottom:5px;">Slider</div>
+      <div class="wf-text" style="font-size:9px;line-height:1.8;">
+        • Auto-advances 5s<br>• Pauses on hover<br>• Prev/next arrows<br>• Dot indicators<br>• Orange progress bar
+      </div>
+    </div>
+    <div class="wf-box" style="padding:10px;">
+      <div class="wf-label" style="margin-bottom:5px;">Auth Form</div>
+      <div class="wf-text" style="font-size:9px;line-height:1.8;">
+        • Blue gradient left panel<br>• White card form right<br>• Login / Register toggle<br>• Class tag input<br>• Orange submit button
+      </div>
+    </div>
+    <div class="wf-box" style="padding:10px;">
+      <div class="wf-label" style="margin-bottom:5px;">Admin Charts</div>
+      <div class="wf-text" style="font-size:9px;line-height:1.8;">
+        • Line: daily activity<br>• Bar: monthly volume<br>• Pie: by subject/condition<br>• Tables: users, exchanges<br>• Demand gap alerts
+      </div>
+    </div>
+    <div class="wf-box" style="padding:10px;">
+      <div class="wf-label" style="margin-bottom:5px;">Color System</div>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:14px;height:14px;background:#003DA5;border-radius:2px;"></div><div class="wf-text" style="font-size:9px;">CSUF Blue #003DA5</div></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:14px;height:14px;background:#FF6B00;border-radius:2px;"></div><div class="wf-text" style="font-size:9px;">CSUF Orange #FF6B00</div></div>
+        <div style="display:flex;align-items:center;gap:6px;"><div style="width:14px;height:14px;background:#f0f4ff;border-radius:2px;border:1px solid #1a4488;"></div><div class="wf-text" style="font-size:9px;">BG #f0f4ff (dot grid)</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:48px;font-size:10px;color:#1a3a70;font-family:'Share Tech Mono',monospace;letter-spacing:0.1em;">
+  TITUS — CAL STATE FULLERTON BOOK EXCHANGE · WIREFRAME DOCUMENT · 2026
+</div>
+
+</body>
+</html>
