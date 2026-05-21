@@ -163,14 +163,24 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
-// PATCH /api/books/:id — update availability
+// PATCH /api/books/:id — update availability or other fields
 router.patch('/:id', protect, async (req, res) => {
   try {
     const book = await Book.findOne({ _id: req.params.id, owner: req.user._id });
     if (!book) return res.status(404).json({ message: 'Book not found or not yours' });
 
+    const changedFields = Object.keys(req.body);
     Object.assign(book, req.body);
     await book.save();
+
+    ActivityLog.create({
+      user:        req.user._id,
+      action:      'book_updated',
+      detail:      `Updated "${book.title}" (${changedFields.join(', ')})`,
+      relatedBook: book._id,
+      metadata:    { fields: changedFields, available: book.available },
+    }).catch(() => {});
+
     res.json(book);
   } catch (err) {
     res.status(400).json({ message: err.message });

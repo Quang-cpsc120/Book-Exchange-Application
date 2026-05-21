@@ -228,6 +228,13 @@ activitylogs   ← action: "view_book", category: "catalog"
                   relatedBook: <bookId>
 ```
 
+**Update a listing** (availability toggle, condition, description edits)
+```
+books          ← $set updated fields
+activitylogs   ← action: "book_updated", category: "catalog"
+                  metadata: { fields: ["available", "condition"], available: false }
+```
+
 **Delete a listing**
 ```
 books          ← document deleted
@@ -288,10 +295,13 @@ activitylogs     ← action: "request_completed", category: "exchange"
 
 ### In-App Messaging
 
-**Start a conversation** (click "Message Seller" on a book)
+**Start a conversation** (click "Message Seller" on a book — first time only)
 ```
 conversations  ← new document: participants [userA, userB], book ref, lastMessage, lastAt
+activitylogs   ← action: "conversation_started", category: "messaging"
+                  relatedConversation, metadata: { recipientId, bookId }
 ```
+> Re-opening an existing thread does **not** create a new log entry.
 
 **Send a message**
 ```
@@ -325,18 +335,37 @@ activitylogs   ← action: "watchlist_remove", category: "discovery"
 
 ---
 
+### Admin Actions
+
+**Grant admin privileges**
+```
+users          ← $set isAdmin: true
+activitylogs   ← action: "admin_promotion", category: "admin"   (await — never skipped)
+                  metadata: { promotedUserId, promotedStudentId }
+```
+> Every privilege escalation is recorded synchronously so the audit trail is always complete.
+
+**Admin views a dashboard page** (overview, users, searches, exchanges, reports)
+```
+activitylogs   ← action: "admin_access", category: "admin"
+                  metadata: { page: "overview" | "users" | "searches" | "exchanges" | "reports" }
+```
+
+---
+
 ### Activity Categories at a Glance
 
-Every `activitylogs` document carries a `category` field set automatically:
+Every `activitylogs` document carries a `category` field set automatically by a pre-save hook — callers never need to pass it:
 
-| Category    | Actions                                                              |
-|-------------|----------------------------------------------------------------------|
-| `auth`      | signup, login                                                        |
-| `catalog`   | post_book, view_book, delete_book, isbn_lookup                       |
-| `exchange`  | request_sent, request_accepted, request_declined, request_completed  |
-| `messaging` | message_sent                                                         |
-| `discovery` | watchlist_add, watchlist_remove                                      |
-| `profile`   | profile_update                                                       |
+| Category    | Actions                                                                        |
+|-------------|--------------------------------------------------------------------------------|
+| `auth`      | signup, login                                                                  |
+| `catalog`   | post_book, view_book, delete_book, isbn_lookup, **book_updated**               |
+| `exchange`  | request_sent, request_accepted, request_declined, request_completed            |
+| `messaging` | message_sent, **conversation_started**                                         |
+| `discovery` | watchlist_add, watchlist_remove                                                |
+| `profile`   | profile_update                                                                 |
+| `admin`     | **admin_access**, **admin_promotion**                                          |
 
 Example analytics queries you can run on Atlas:
 

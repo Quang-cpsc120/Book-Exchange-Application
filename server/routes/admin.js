@@ -11,8 +11,19 @@ const adminOnly     = require('../middleware/admin');
 
 router.use(protect, adminOnly);
 
+// Lightweight audit helper — logs which admin viewed which dashboard page
+function logAdminAccess(req, page) {
+  ActivityLog.create({
+    user:     req.user._id,
+    action:   'admin_access',
+    detail:   `Viewed admin ${page}`,
+    metadata: { page },
+  }).catch(() => {});
+}
+
 // ── GET /api/admin/overview ──────────────────────────────────────────────────
 router.get('/overview', async (req, res) => {
+  logAdminAccess(req, 'overview');
   try {
     const [users, books, exchanges, searches, pendingExchanges, completedExchanges] = await Promise.all([
       User.countDocuments(),
@@ -50,6 +61,7 @@ router.get('/overview', async (req, res) => {
 
 // ── GET /api/admin/users ─────────────────────────────────────────────────────
 router.get('/users', async (req, res) => {
+  logAdminAccess(req, 'users');
   try {
     const { sort = 'newest', q } = req.query;
     const filter = {};
@@ -101,6 +113,7 @@ router.get('/users/:id/activity', async (req, res) => {
 
 // ── GET /api/admin/searches ──────────────────────────────────────────────────
 router.get('/searches', async (req, res) => {
+  logAdminAccess(req, 'searches');
   try {
     const { limit = 200 } = req.query;
 
@@ -140,6 +153,7 @@ router.get('/searches', async (req, res) => {
 
 // ── GET /api/admin/exchanges ─────────────────────────────────────────────────
 router.get('/exchanges', async (req, res) => {
+  logAdminAccess(req, 'exchanges');
   try {
     const { status, limit = 200 } = req.query;
     const filter = status ? { status } : {};
@@ -177,6 +191,7 @@ router.get('/exchanges', async (req, res) => {
 
 // ── GET /api/admin/reports ───────────────────────────────────────────────────
 router.get('/reports', async (req, res) => {
+  logAdminAccess(req, 'reports');
   try {
     // Books by subject
     const booksBySubject = await Book.aggregate([
@@ -248,6 +263,16 @@ router.post('/make-admin', async (req, res) => {
     const { studentId } = req.body;
     const user = await User.findOneAndUpdate({ studentId }, { isAdmin: true }, { new: true });
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Audit log — privilege escalation must always be recorded
+    await ActivityLog.create({
+      user:     req.user._id,
+      action:   'admin_promotion',
+      detail:   `Granted admin privileges to ${user.fullName} (${user.studentId})`,
+      metadata: { promotedUserId: user._id.toString(), promotedStudentId: user.studentId },
+    });
+    console.log(`🛡️  Admin promotion: ${user.fullName} (${user.studentId}) by ${req.user.fullName}`);
+
     res.json({ message: `${user.fullName} is now an admin`, user });
   } catch (err) {
     res.status(500).json({ message: err.message });

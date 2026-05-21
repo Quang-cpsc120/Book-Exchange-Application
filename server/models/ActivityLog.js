@@ -2,20 +2,37 @@ const mongoose = require('mongoose');
 
 // Maps every action to a business category for analytics grouping
 const CATEGORY_MAP = {
-  signup:            'auth',
-  login:             'auth',
-  post_book:         'catalog',
-  view_book:         'catalog',
-  delete_book:       'catalog',
-  isbn_lookup:       'catalog',
-  request_sent:      'exchange',
-  request_accepted:  'exchange',
-  request_declined:  'exchange',
-  request_completed: 'exchange',
-  message_sent:      'messaging',
-  watchlist_add:     'discovery',
-  watchlist_remove:  'discovery',
-  profile_update:    'profile',
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  signup:               'auth',
+  login:                'auth',
+
+  // ── Catalog ───────────────────────────────────────────────────────────────
+  post_book:            'catalog',
+  view_book:            'catalog',
+  delete_book:          'catalog',
+  isbn_lookup:          'catalog',
+  book_updated:         'catalog',   // availability toggle, title/condition edits
+
+  // ── Exchange ──────────────────────────────────────────────────────────────
+  request_sent:         'exchange',
+  request_accepted:     'exchange',
+  request_declined:     'exchange',
+  request_completed:    'exchange',
+
+  // ── Messaging ─────────────────────────────────────────────────────────────
+  message_sent:         'messaging',
+  conversation_started: 'messaging', // first time two users open a thread
+
+  // ── Discovery ─────────────────────────────────────────────────────────────
+  watchlist_add:        'discovery',
+  watchlist_remove:     'discovery',
+
+  // ── Profile ───────────────────────────────────────────────────────────────
+  profile_update:       'profile',
+
+  // ── Admin ─────────────────────────────────────────────────────────────────
+  admin_access:         'admin',     // dashboard pages viewed (metadata.page)
+  admin_promotion:      'admin',     // user granted admin privileges
 };
 
 const activityLogSchema = new mongoose.Schema(
@@ -33,7 +50,7 @@ const activityLogSchema = new mongoose.Schema(
     // Auto-set by pre-save hook; indexed for fast category-based analytics
     category: {
       type: String,
-      enum: ['auth', 'catalog', 'exchange', 'messaging', 'discovery', 'profile'],
+      enum: ['auth', 'catalog', 'exchange', 'messaging', 'discovery', 'profile', 'admin'],
     },
     detail: { type: String, required: true },
 

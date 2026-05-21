@@ -42,6 +42,16 @@ router.post('/start', protect, async (req, res) => {
       conv = await Conversation.findById(created._id)
         .populate('participants', 'fullName studentId')
         .populate('book', 'title author');
+
+      ActivityLog.create({
+        user:                req.user._id,
+        action:              'conversation_started',
+        detail:              conv.book
+          ? `Started a conversation about "${conv.book.title}"`
+          : 'Started a new conversation',
+        relatedConversation: conv._id,
+        metadata:            { recipientId, bookId: bookId || null },
+      }).catch(() => {});
     }
 
     res.json(conv);
