@@ -5,6 +5,16 @@ Built with **React 18** (frontend) + **Express + MongoDB Atlas** (backend).
 
 ---
 
+## Application Wireframe
+
+Blueprint diagram of all screens and components:
+
+**[View Interactive Wireframe →](https://htmlpreview.github.io/?https://github.com/Quang-cpsc120/Book-Exchange-Application/blob/main/client/public/wireframe.html)**
+
+> Or locally while the app is running: [http://localhost:3000/wireframe.html](http://localhost:3000/wireframe.html)
+
+---
+
 ## Tech Stack
 
 | Layer      | Technology                                        |
