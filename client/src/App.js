@@ -23,6 +23,16 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/auth" replace />;
 }
 
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div className="spinner spinner-dark" style={{ width: 32, height: 32 }} />
+    </div>
+  );
+  return user?.isAdmin ? children : <Navigate to="/" replace />;
+}
+
 export default function App() {
   const { user, loading } = useAuth();
 
@@ -43,7 +53,7 @@ export default function App() {
             <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
             <Route path="/browse" element={<PrivateRoute><ProductPage /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-            <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

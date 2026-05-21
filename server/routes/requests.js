@@ -13,8 +13,8 @@ router.get('/', protect, async (req, res) => {
     const requests = await ExchangeRequest.find({
       $or: [{ requester: req.user._id }, { bookOwner: req.user._id }],
     })
-      .populate('requester', 'fullName studentId')
-      .populate('bookOwner', 'fullName studentId')
+      .populate('requester', 'fullName studentId department')
+      .populate('bookOwner', 'fullName studentId department')
       .populate('book', 'title author subject condition')
       .sort({ createdAt: -1 });
 
@@ -97,6 +97,9 @@ router.patch('/:id', protect, async (req, res) => {
     if (!exchangeRequest) return res.status(404).json({ message: 'Request not found' });
     if (exchangeRequest.bookOwner.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to update this request' });
+    }
+    if (status === 'accepted' && !exchangeRequest.book.available) {
+      return res.status(400).json({ message: 'This book is no longer available' });
     }
 
     exchangeRequest.status = status;

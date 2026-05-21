@@ -22,13 +22,13 @@ Blueprint diagram of all screens and components:
 | **ISBN auto-fill** | Enter an ISBN on the Post Book form — title + author auto-populate from Open Library |
 | **Personalized feed** | Home page recommends books by your major, then by your listed classes, then new arrivals |
 | **Browse & filter** | Sidebar filters by major, condition, class code, keyword; filters save to your watchlist |
-| **Exchange requests** | Send / accept / decline requests; accepting auto-declines all other pending requests |
+| **Exchange requests** | Send / accept / decline requests; accepting auto-declines all other pending requests; race condition guard prevents double-accepts |
 | **In-app messaging** | Real-time chat drawer per book; unread badge on navbar |
 | **Watchlist** | Save any filter combo; revisit from your profile with a Browse → shortcut |
 | **Email notifications** | Nodemailer alerts for request received, accepted, and declined (optional, Gmail-ready) |
 | **Mobile responsive** | Hamburger nav, collapsible filter drawer, stacked hero, bottom-sheet messages modal |
 | **Activity feed** | Every action logged and categorized for your profile and admin analytics |
-| **Admin dashboard** | Platform stats, user lookup, search trends, exchange funnel charts |
+| **Admin dashboard** | Platform stats, user lookup, search trends, exchange funnel charts; route guard enforces admin-only access |
 
 ---
 

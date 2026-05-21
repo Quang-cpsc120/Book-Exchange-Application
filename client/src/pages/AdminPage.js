@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
@@ -91,7 +91,7 @@ function UsersTab() {
 
   const load = useCallback(async () => {
     try {
-      const res = await axios.get(`/api/admin/users?q=${encodeURIComponent(q)}&sort=${sort}`);
+      const res = await api.get(`/admin/users?q=${encodeURIComponent(q)}&sort=${sort}`);
       setUsers(res.data);
     } catch {}
   }, [q, sort]);
@@ -102,7 +102,7 @@ function UsersTab() {
     setSelected(u);
     setActivity(null);
     try {
-      const res = await axios.get(`/api/admin/users/${u._id}/activity`);
+      const res = await api.get(`/admin/users/${u._id}/activity`);
       setActivity(res.data);
     } catch {}
   };
@@ -533,10 +533,10 @@ export default function AdminPage() {
   const [reports, setReports] = useState(null);
 
   useEffect(() => {
-    if (tab === 0 && !overview) axios.get('/api/admin/overview').then(r => setOverview(r.data)).catch(() => {});
-    if (tab === 2 && !searches) axios.get('/api/admin/searches').then(r => setSearches(r.data)).catch(() => {});
-    if (tab === 3 && !exchanges) axios.get('/api/admin/exchanges').then(r => setExchanges(r.data)).catch(() => {});
-    if (tab === 4 && !reports) axios.get('/api/admin/reports').then(r => setReports(r.data)).catch(() => {});
+    if (tab === 0 && !overview) api.get('/admin/overview').then(r => setOverview(r.data)).catch(() => {});
+    if (tab === 2 && !searches) api.get('/admin/searches').then(r => setSearches(r.data)).catch(() => {});
+    if (tab === 3 && !exchanges) api.get('/admin/exchanges').then(r => setExchanges(r.data)).catch(() => {});
+    if (tab === 4 && !reports) api.get('/admin/reports').then(r => setReports(r.data)).catch(() => {});
   }, [tab]); // eslint-disable-line
 
   const refresh = () => {
