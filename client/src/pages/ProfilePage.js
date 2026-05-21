@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import ExchangeRequests from '../components/ExchangeRequests';
 import ActivityFeed from '../components/ActivityFeed';
 import api from '../utils/api';
+import useIsMobile from '../hooks/useIsMobile';
 
 const DEPARTMENTS = ['Computer Science','Engineering','Mathematics','Physics','Chemistry','Biology','Economics','Literature','History','Other'];
 const YEARS       = ['Freshman','Sophomore','Junior','Senior','Graduate'];
@@ -12,6 +13,7 @@ const CONDITIONS  = ['Like New','Good','Fair','Worn'];
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
+  const isMobile = useIsMobile();
   const location = useLocation();
   const queryTab = new URLSearchParams(location.search).get('tab');
   const [tab, setTab] = useState(queryTab || 'profile');
@@ -31,9 +33,9 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div style={s.page}>
+    <div style={{ ...s.page, padding: isMobile ? '16px 14px' : '32px 24px' }}>
       {/* ── Profile header ── */}
-      <div style={s.profileHeader}>
+      <div style={{ ...s.profileHeader, padding: isMobile ? '18px 16px' : '28px 28px', gap: isMobile ? 14 : 20 }}>
         <div style={s.avatarLg}>{initials(user?.fullName)}</div>
         <div style={s.headerInfo}>
           <h1 style={s.name}>{user?.fullName}</h1>
@@ -74,6 +76,7 @@ export default function ProfilePage() {
 
 /* ── Profile edit tab ── */
 function ProfileTab({ user, updateProfile }) {
+  const isMobile = useIsMobile();
   const [form, setForm] = useState({
     fullName:   user?.fullName   || '',
     department: user?.department || '',
@@ -107,7 +110,7 @@ function ProfileTab({ user, updateProfile }) {
   };
 
   return (
-    <div style={pt.wrap}>
+    <div style={{ ...pt.wrap, gridTemplateColumns: isMobile ? '1fr' : '1fr 320px' }}>
       <div style={pt.formCard}>
         <h2 style={pt.sectionTitle}>Personal information</h2>
         <form onSubmit={save}>

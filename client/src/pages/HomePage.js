@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import BookCard from '../components/BookCard';
 import BookModal from '../components/BookModal';
 import api from '../utils/api';
+import useIsMobile from '../hooks/useIsMobile';
 
 // ── Cover color palette (matches BookCard) ────────────────────────────────────
 const SLIDE_COLORS = [
@@ -30,6 +31,7 @@ const CONDITION_COLOR = {
 
 // ── NewArrivalsSlider ─────────────────────────────────────────────────────────
 function NewArrivalsSlider({ books, onOpen }) {
+  const isMobile = useIsMobile();
   const [current, setCurrent]   = useState(0);
   const [animating, setAnimating] = useState(false);
   const [direction, setDirection] = useState('next'); // 'next' | 'prev'
@@ -87,19 +89,21 @@ function NewArrivalsSlider({ books, onOpen }) {
       </div>
 
       {/* Main slide */}
-      <div style={slideStyle}>
-        {/* Book spine cover */}
-        <div style={{ ...sl.cover, background: bg }}>
-          <div style={{ ...sl.spine, background: 'rgba(0,0,0,0.2)' }} />
-          <div style={sl.coverBody}>
-            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: acc, opacity: 0.85, marginBottom: 6 }}>{abbr}</div>
-            <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.3, color: '#fff', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</div>
-            {book.author && (
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.55)', marginTop: 6, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.author}</div>
-            )}
+      <div style={{ ...slideStyle, flexDirection: isMobile ? 'column' : 'row', padding: isMobile ? '14px 14px 8px' : '20px 60px 20px 20px', minHeight: isMobile ? 'auto' : 190 }}>
+        {/* Book spine cover — hidden on mobile to save space */}
+        {!isMobile && (
+          <div style={{ ...sl.cover, background: bg }}>
+            <div style={{ ...sl.spine, background: 'rgba(0,0,0,0.2)' }} />
+            <div style={sl.coverBody}>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: acc, opacity: 0.85, marginBottom: 6 }}>{abbr}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.3, color: '#fff', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</div>
+              {book.author && (
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.55)', marginTop: 6, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.author}</div>
+              )}
+            </div>
+            <div style={{ position: 'absolute', bottom: 0, left: 10, right: 0, height: 3, background: acc, opacity: 0.5 }} />
           </div>
-          <div style={{ position: 'absolute', bottom: 0, left: 10, right: 0, height: 3, background: acc, opacity: 0.5 }} />
-        </div>
+        )}
 
         {/* Book info */}
         <div style={sl.info}>
@@ -108,28 +112,30 @@ function NewArrivalsSlider({ books, onOpen }) {
             <span style={{ ...sl.badge, background: 'var(--blue-light)', color: 'var(--blue)' }}>{book.subject}</span>
           </div>
 
-          <h2 style={sl.title}>{book.title}</h2>
+          <h2 style={{ ...sl.title, fontSize: isMobile ? 16 : 20 }}>{book.title}</h2>
           <div style={sl.author}>by {book.author}</div>
 
-          <p style={sl.desc}>
-            {book.description
-              ? book.description.length > 200
-                ? book.description.slice(0, 200) + '…'
-                : book.description
-              : `A ${book.subject} textbook in ${book.condition?.toLowerCase()} condition, available for exchange.`
-            }
-          </p>
+          {!isMobile && (
+            <p style={sl.desc}>
+              {book.description
+                ? book.description.length > 200
+                  ? book.description.slice(0, 200) + '…'
+                  : book.description
+                : `A ${book.subject} textbook in ${book.condition?.toLowerCase()} condition, available for exchange.`
+              }
+            </p>
+          )}
 
           <div style={sl.footer}>
             <span style={sl.postedBy}>
-              📌 Posted by {book.owner?.fullName || 'a student'}
+              📌 {book.owner?.fullName || 'a student'}
               {book.owner?.department ? ` · ${book.owner.department}` : ''}
             </span>
             <button
               className="btn btn-cta btn-sm"
               onClick={() => onOpen(book, current)}
             >
-              View Book →
+              View →
             </button>
           </div>
         </div>
@@ -181,6 +187,7 @@ function NewArrivalsSlider({ books, onOpen }) {
 // ── Main HomePage ─────────────────────────────────────────────────────────────
 export default function HomePage() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [data, setData]       = useState({ majorBooks: [], classBooks: [], newArrivals: [] });
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
@@ -203,14 +210,14 @@ export default function HomePage() {
   const sliderBooks = [...data.newArrivals, ...data.classBooks, ...data.majorBooks].slice(0, 10);
 
   return (
-    <div style={s.page}>
+    <div style={{ ...s.page, padding: isMobile ? '16px 14px' : '32px 24px' }}>
 
       {/* ── Hero / welcome banner ── */}
-      <div style={s.hero}>
+      <div style={{ ...s.hero, flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', padding: isMobile ? '20px 18px' : '26px 30px' }}>
         <div style={s.heroLeft}>
           <div style={s.heroAvatar}>{initials(user?.fullName)}</div>
           <div>
-            <h1 style={s.heroHeading}>Welcome back, {user?.fullName?.split(' ')[0]}!</h1>
+            <h1 style={{ ...s.heroHeading, fontSize: isMobile ? 17 : 20 }}>Welcome back, {user?.fullName?.split(' ')[0]}!</h1>
             <p style={s.heroSub}>
               {user?.department && <span style={s.heroPill}>{user.department}</span>}
               {user?.year        && <span style={s.heroPill}>{user.year}</span>}
@@ -219,7 +226,7 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-        <div style={s.heroStats}>
+        <div style={{ ...s.heroStats, width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-around' : 'flex-start', marginTop: isMobile ? 14 : 0 }}>
           <div style={s.statItem}>
             <span style={s.statNum}>{user?.booksPosted || 0}</span>
             <span style={s.statLbl}>Listed</span>

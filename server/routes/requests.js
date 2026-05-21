@@ -5,6 +5,7 @@ const Book = require('../models/Book');
 const User = require('../models/User');
 const ActivityLog = require('../models/ActivityLog');
 const { protect } = require('../middleware/auth');
+const { sendEmail, requestReceivedEmail, requestAcceptedEmail, requestDeclinedEmail } = require('../utils/email');
 
 // GET /api/requests — get all requests for current user (incoming + outgoing)
 router.get('/', protect, async (req, res) => {
@@ -62,6 +63,19 @@ router.post('/', protect, async (req, res) => {
 
     console.log(`📤  Exchange request: ${req.user.fullName} → "${book.title}"`);
 
+    // Email the book owner (non-blocking)
+    User.findById(book.owner._id).select('email fullName').then(owner => {
+      if (!owner?.email) return;
+      const tpl = requestReceivedEmail({
+        ownerName:     owner.fullName,
+        requesterName: req.user.fullName,
+        bookTitle:     book.title,
+        offerBook:     offerBook || '',
+        message:       message || '',
+      });
+      sendEmail({ to: owner.email, ...tpl });
+    }).catch(() => {});
+
     const populated = await exchangeRequest.populate([
       { path: 'requester', select: 'fullName studentId' },
       { path: 'book', select: 'title author subject' },
@@ -111,6 +125,17 @@ router.patch('/:id', protect, async (req, res) => {
       });
 
       console.log(`✅  Exchange accepted: "${exchangeRequest.book.title}"`);
+
+      // Email the requester (non-blocking)
+      User.findById(exchangeRequest.requester).select('email fullName').then(requester => {
+        if (!requester?.email) return;
+        const tpl = requestAcceptedEmail({
+          requesterName: requester.fullName,
+          ownerName:     req.user.fullName,
+          bookTitle:     exchangeRequest.book.title,
+        });
+        sendEmail({ to: requester.email, ...tpl });
+      }).catch(() => {});
     } else if (status === 'declined') {
       await ActivityLog.create({
         user: req.user._id,
@@ -119,6 +144,17 @@ router.patch('/:id', protect, async (req, res) => {
         relatedBook: exchangeRequest.book._id,
         relatedRequest: exchangeRequest._id,
       });
+
+      // Email the requester (non-blocking)
+      User.findById(exchangeRequest.requester).select('email fullName').then(requester => {
+        if (!requester?.email) return;
+        const tpl = requestDeclinedEmail({
+          requesterName: requester.fullName,
+          ownerName:     req.user.fullName,
+          bookTitle:     exchangeRequest.book.title,
+        });
+        sendEmail({ to: requester.email, ...tpl });
+      }).catch(() => {});
     } else if (status === 'completed') {
       await ActivityLog.create({
         user:           req.user._id,

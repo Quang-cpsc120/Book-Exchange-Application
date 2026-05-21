@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useMessages } from '../context/MessagesContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import useIsMobile from '../hooks/useIsMobile';
 
 export default function MessagesModal() {
   const { isOpen, closeMessages, activeConvId, setActiveConvId, refreshUnread } = useMessages();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
 
   const [convs,       setConvs]       = useState([]);
   const [loadingConvs, setLoadingConvs] = useState(false);
@@ -67,7 +69,7 @@ export default function MessagesModal() {
 
   return (
     <div style={s.overlay} onClick={e => { if (e.target === e.currentTarget) closeMessages(); }}>
-      <div style={s.panel}>
+      <div style={{ ...s.panel, width: isMobile ? '100%' : 380, borderRadius: isMobile ? '16px 16px 0 0' : 0, maxHeight: isMobile ? '90vh' : '100vh', marginTop: isMobile ? 'auto' : 0 }}>
         {/* Header */}
         <div style={s.header}>
           <span style={s.headerTitle}>Messages</span>
@@ -175,8 +177,8 @@ export default function MessagesModal() {
 }
 
 const s = {
-  overlay:     { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 400, display: 'flex', justifyContent: 'flex-end' },
-  panel:       { background: '#fff', width: 380, maxWidth: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', boxShadow: '-4px 0 28px rgba(0,0,0,0.14)' },
+  overlay:     { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 400, display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' },
+  panel:       { background: '#fff', width: 380, maxWidth: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', boxShadow: '-4px 0 28px rgba(0,0,0,0.14)', overflow: 'hidden' },
   header:      { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 18px', borderBottom: '1px solid var(--border)', flexShrink: 0 },
   headerTitle: { fontSize: 16, fontWeight: 700, color: 'var(--text)' },
   closeBtn:    { background: '#f0f2f8', border: 'none', width: 30, height: 30, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#111' },
