@@ -272,7 +272,7 @@ const s = {
   chips:   { display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 },
   savedMsg:{ fontSize: 12, color: 'var(--success)', fontWeight: 500, marginTop: 7, textAlign: 'center' },
   main:    { flex: 1, minWidth: 0 },
-  heading: { fontSize: 28, fontWeight: 800, letterSpacing: '-0.01em', color: 'var(--text)', marginBottom: 6, lineHeight: 1.15, fontFamily: "'Nunito', var(--font)" },
+  heading: { fontSize: 28, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--text)', marginBottom: 6, lineHeight: 1.15, fontFamily: "'Nunito', var(--font)", opacity: 0.8 },
   sub:     { fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 },
   count:   { fontSize: 13, color: 'var(--muted)', fontWeight: 500, background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '4px 12px' },
   emptyWrap: { background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: 40 },
