@@ -15,6 +15,23 @@ Blueprint diagram of all screens and components:
 
 ---
 
+## Features
+
+| Feature | Details |
+|---------|---------|
+| **ISBN auto-fill** | Enter an ISBN on the Post Book form — title + author auto-populate from Open Library |
+| **Personalized feed** | Home page recommends books by your major, then by your listed classes, then new arrivals |
+| **Browse & filter** | Sidebar filters by major, condition, class code, keyword; filters save to your watchlist |
+| **Exchange requests** | Send / accept / decline requests; accepting auto-declines all other pending requests |
+| **In-app messaging** | Real-time chat drawer per book; unread badge on navbar |
+| **Watchlist** | Save any filter combo; revisit from your profile with a Browse → shortcut |
+| **Email notifications** | Nodemailer alerts for request received, accepted, and declined (optional, Gmail-ready) |
+| **Mobile responsive** | Hamburger nav, collapsible filter drawer, stacked hero, bottom-sheet messages modal |
+| **Activity feed** | Every action logged and categorized for your profile and admin analytics |
+| **Admin dashboard** | Platform stats, user lookup, search trends, exchange funnel charts |
+
+---
+
 ## Tech Stack
 
 | Layer      | Technology                                        |
@@ -23,6 +40,7 @@ Blueprint diagram of all screens and components:
 | Backend    | Node.js, Express 4                                |
 | Database   | MongoDB Atlas via Mongoose                        |
 | Auth       | JWT (JSON Web Tokens) + bcrypt                    |
+| Email      | Nodemailer (optional — Gmail SMTP or any SMTP)    |
 | Fonts      | Inter (UI), Nunito (headings) via Google Fonts    |
 | Dev tools  | nodemon, concurrently                             |
 
@@ -47,14 +65,16 @@ bookswap/
 │   ├── routes/
 │   │   ├── auth.js                ← register, login, profile update
 │   │   ├── books.js               ← CRUD + search/filter/recommend
-│   │   ├── requests.js            ← exchange request flow
+│   │   ├── requests.js            ← exchange request flow + email triggers
 │   │   ├── messages.js            ← in-app messaging
 │   │   ├── watchlist.js           ← saved searches
 │   │   ├── activity.js            ← activity feed
 │   │   └── admin.js               ← admin dashboard data
-│   └── middleware/
-│       ├── auth.js                ← JWT protect middleware
-│       └── admin.js               ← admin-only guard
+│   ├── middleware/
+│   │   ├── auth.js                ← JWT protect middleware
+│   │   └── admin.js               ← admin-only guard
+│   └── utils/
+│       └── email.js               ← nodemailer transporter + HTML email templates
 └── client/
     ├── public/
     │   └── index.html
@@ -64,19 +84,21 @@ bookswap/
         ├── context/
         │   ├── AuthContext.js     ← user session state
         │   └── MessagesContext.js ← messaging drawer state + unread count
+        ├── hooks/
+        │   └── useIsMobile.js     ← responsive breakpoint hook (default 768px)
         ├── pages/
         │   ├── AuthPage.js        ← sign in / register
         │   ├── HomePage.js        ← personalized feed + new arrivals slider
-        │   ├── ProductPage.js     ← browse + filter sidebar
+        │   ├── ProductPage.js     ← browse + collapsible filter sidebar
         │   ├── ProfilePage.js     ← profile, listings, requests, watchlist
         │   └── AdminPage.js       ← admin dashboard (charts, user logs)
         └── components/
-            ├── Navbar.js          ← nav with messages icon + pending badge
+            ├── Navbar.js          ← nav + hamburger menu on mobile
             ├── BookCard.js        ← book tile
             ├── BookModal.js       ← book detail + exchange request form
             ├── PostBookModal.js   ← quick post with ISBN auto-fill
             ├── PostBook.js        ← full post form + my listings
-            ├── MessagesModal.js   ← right-side chat drawer
+            ├── MessagesModal.js   ← side drawer (desktop) / bottom sheet (mobile)
             ├── ExchangeRequests.js
             ├── ActivityFeed.js
             └── Logo.js
@@ -103,9 +125,19 @@ Open `server/.env` and fill in:
 MONGO_URI=mongodb+srv://YOUR_USER:YOUR_PASS@cluster0.xxxxx.mongodb.net/bookswap?retryWrites=true&w=majority
 JWT_SECRET=any_long_random_string_here
 PORT=5000
+
+# Optional — email notifications (leave blank to disable)
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_app_password_here
+EMAIL_FROM="Titus Book Exchange" <your_gmail@gmail.com>
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
 ```
 
 > Make sure your Atlas cluster allows connections: **Network Access → Add IP → 0.0.0.0/0**
+
+> **Email setup (optional):** For Gmail, generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords). If `EMAIL_USER` / `EMAIL_PASS` are not set, email events are logged to the console only — the app works fully without them.
 
 ### 2 — Install all dependencies
 
