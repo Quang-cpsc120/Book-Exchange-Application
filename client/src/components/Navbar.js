@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useMessages } from '../context/MessagesContext';
 import PostBookModal from './PostBookModal';
 import Logo from './Logo';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { openMessages, unreadCount } = useMessages();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [postOpen, setPostOpen] = useState(false);
@@ -66,6 +68,18 @@ export default function Navbar() {
             <button className="btn btn-cta btn-sm" onClick={() => setPostOpen(true)}>
               + Post a Book
             </button>
+
+            {/* Messages icon */}
+            <div style={s.msgWrap}>
+              <button style={s.msgBtn} onClick={() => openMessages()} title="Messages">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+              </button>
+              {unreadCount > 0 && (
+                <span style={s.msgBadge}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+              )}
+            </div>
 
             {/* User dropdown */}
             <div style={s.dropWrap} ref={dropRef}>
@@ -181,7 +195,10 @@ const s = {
     borderBottomColor: 'var(--blue)',
     fontWeight: 600,
   },
-  right: { display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' },
+  right:   { display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' },
+  msgWrap: { position: 'relative' },
+  msgBtn:  { background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 'var(--radius)', transition: 'color .15s, background .15s' },
+  msgBadge:{ position: 'absolute', top: -2, right: -2, background: '#ef4444', color: '#fff', borderRadius: 10, fontSize: 9, fontWeight: 700, padding: '1px 4px', minWidth: 16, textAlign: 'center', lineHeight: '14px' },
   dropWrap: { position: 'relative' },
   avatarBtn: {
     display: 'flex',

@@ -60,6 +60,11 @@ async function ensureIndexes() {
     await db.collection('exchangerequests').createIndex({ book: 1, status: 1 });
     await db.collection('exchangerequests').createIndex({ status: 1, createdAt: -1 });
 
+    // Messages + Conversations
+    await db.collection('conversations').createIndex({ participants: 1 });
+    await db.collection('conversations').createIndex({ lastAt: -1 });
+    await db.collection('messages').createIndex({ conversation: 1, createdAt: 1 });
+
     console.log('📇  Database indexes ensured');
   } catch (err) {
     console.warn('⚠️  Index creation warning:', err.message);
@@ -67,11 +72,13 @@ async function ensureIndexes() {
 }
 
 // ── Routes ───────────────────────────────────────────────────────────────────
-app.use('/api/auth',     require('./routes/auth'));
-app.use('/api/books',    require('./routes/books'));
-app.use('/api/requests', require('./routes/requests'));
-app.use('/api/activity', require('./routes/activity'));
-app.use('/api/admin',    require('./routes/admin'));
+app.use('/api/auth',      require('./routes/auth'));
+app.use('/api/books',     require('./routes/books'));
+app.use('/api/requests',  require('./routes/requests'));
+app.use('/api/activity',  require('./routes/activity'));
+app.use('/api/admin',     require('./routes/admin'));
+app.use('/api/messages',  require('./routes/messages'));
+app.use('/api/watchlist', require('./routes/watchlist'));
 
 // ── Health ───────────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {

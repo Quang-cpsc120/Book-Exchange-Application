@@ -5,13 +5,40 @@ const SUBJECTS = ['Computer Science','Mathematics','Physics','Chemistry','Biolog
 const CONDITIONS = ['Like New','Good','Fair','Worn'];
 
 export default function PostBook({ onPosted }) {
-  const [form, setForm] = useState({ title: '', author: '', subject: '', condition: 'Good', description: '' });
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState({ text: '', ok: false });
+  const [form, setForm]         = useState({ title: '', author: '', subject: '', condition: 'Good', description: '', isbn: '' });
+  const [isbnInput, setIsbnInput]   = useState('');
+  const [isbnLoading, setIsbnLoading] = useState(false);
+  const [isbnMsg, setIsbnMsg]     = useState({ text: '', ok: false });
+  const [loading, setLoading]     = useState(false);
+  const [msg, setMsg]             = useState({ text: '', ok: false });
   const [myBooks, setMyBooks] = useState([]);
   const [booksLoading, setBooksLoading] = useState(true);
 
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const lookupIsbn = async () => {
+    const clean = isbnInput.replace(/[-\s]/g, '');
+    if (!clean) return;
+    setIsbnLoading(true);
+    setIsbnMsg({ text: '', ok: false });
+    try {
+      const res  = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${clean}&format=json&jscmd=data`);
+      const data = await res.json();
+      const info = data[`ISBN:${clean}`];
+      if (!info) { setIsbnMsg({ text: 'ISBN not found. Enter details manually.', ok: false }); return; }
+      setForm(f => ({
+        ...f,
+        title:  info.title || f.title,
+        author: info.authors?.map(a => a.name).join(', ') || f.author,
+        isbn:   clean,
+      }));
+      setIsbnMsg({ text: `Auto-filled from ISBN ${clean}`, ok: true });
+    } catch {
+      setIsbnMsg({ text: 'Lookup failed. Enter details manually.', ok: false });
+    } finally {
+      setIsbnLoading(false);
+    }
+  };
 
   const fetchMyBooks = useCallback(async () => {
     setBooksLoading(true);
@@ -31,7 +58,9 @@ export default function PostBook({ onPosted }) {
     try {
       await api.post('/books', form);
       setMsg({ text: `"${form.title}" has been listed for exchange!`, ok: true });
-      setForm({ title: '', author: '', subject: '', condition: 'Good', description: '' });
+      setForm({ title: '', author: '', subject: '', condition: 'Good', description: '', isbn: '' });
+      setIsbnInput('');
+      setIsbnMsg({ text: '', ok: false });
       await fetchMyBooks();
     } catch (e) {
       setMsg({ text: e.response?.data?.message || 'Error posting book.', ok: false });
@@ -69,6 +98,32 @@ export default function PostBook({ onPosted }) {
         <div style={s.formCol}>
           <div className="card">
             <h2 className="section-title">New listing</h2>
+
+            {/* ISBN lookup */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', marginBottom: 4 }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  ISBN (auto-fill)
+                </label>
+                <input
+                  style={{ width: '100%', padding: '8px 11px', border: '1.5px solid var(--border)', borderRadius: 'var(--radius)', fontFamily: 'var(--font)', fontSize: 13, outline: 'none', background: 'var(--bg)' }}
+                  value={isbnInput}
+                  onChange={e => setIsbnInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); lookupIsbn(); } }}
+                  placeholder="e.g. 9780262033848"
+                />
+              </div>
+              <button type="button" className="btn btn-outline btn-sm" onClick={lookupIsbn} disabled={isbnLoading || !isbnInput.trim()} style={{ flexShrink: 0 }}>
+                {isbnLoading ? <span className="spinner spinner-dark" style={{ width: 12, height: 12 }} /> : 'Look up'}
+              </button>
+            </div>
+            {isbnMsg.text && (
+              <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 8, paddingLeft: 2, color: isbnMsg.ok ? 'var(--success)' : 'var(--danger)' }}>
+                {isbnMsg.text}
+              </div>
+            )}
+            <div style={{ borderTop: '1px dashed var(--border)', margin: '10px 0 14px' }} />
+
             <form onSubmit={submit}>
               <div className="field">
                 <label>Book title *</label>

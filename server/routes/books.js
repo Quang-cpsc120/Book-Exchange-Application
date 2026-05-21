@@ -126,11 +126,11 @@ router.get('/:id', protect, async (req, res) => {
 // POST /api/books — post a new book
 router.post('/', protect, async (req, res) => {
   try {
-    const { title, author, subject, condition, description } = req.body;
+    const { title, author, subject, condition, description, isbn } = req.body;
 
     const book = await Book.create({
       owner: req.user._id,
-      title, author, subject, condition, description,
+      title, author, subject, condition, description, isbn: isbn || '',
     });
 
     await User.findByIdAndUpdate(req.user._id, { $inc: { booksPosted: 1 } });

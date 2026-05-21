@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema(
     booksPosted:       { type: Number, default: 0 },
     exchangesCompleted:{ type: Number, default: 0 },
     isAdmin:           { type: Boolean, default: false },
+    watchlist: [{
+      keywords:  { type: String, default: '' },
+      subject:   { type: String, default: '' },
+      createdAt: { type: Date, default: Date.now },
+    }],
   },
   { timestamps: true }
 );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ExchangeRequests from '../components/ExchangeRequests';
 import ActivityFeed from '../components/ActivityFeed';
@@ -23,10 +23,11 @@ export default function ProfilePage() {
   const initials = (n = '') => n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   const TABS = [
-    { id: 'profile',  label: 'Profile' },
-    { id: 'listings', label: 'My Listings' },
-    { id: 'requests', label: 'Requests' },
-    { id: 'activity', label: 'Activity' },
+    { id: 'profile',   label: 'Profile' },
+    { id: 'listings',  label: 'My Listings' },
+    { id: 'requests',  label: 'Requests' },
+    { id: 'activity',  label: 'Activity' },
+    { id: 'watchlist', label: 'Watchlist' },
   ];
 
   return (
@@ -61,10 +62,11 @@ export default function ProfilePage() {
 
       {/* ── Tab content ── */}
       <div style={s.tabContent}>
-        {tab === 'profile'  && <ProfileTab user={user} updateProfile={updateProfile} />}
-        {tab === 'listings' && <ListingsTab />}
-        {tab === 'requests' && <ExchangeRequests />}
-        {tab === 'activity' && <ActivityFeed />}
+        {tab === 'profile'   && <ProfileTab user={user} updateProfile={updateProfile} />}
+        {tab === 'listings'  && <ListingsTab />}
+        {tab === 'requests'  && <ExchangeRequests />}
+        {tab === 'activity'  && <ActivityFeed />}
+        {tab === 'watchlist' && <WatchlistTab />}
       </div>
     </div>
   );
@@ -237,6 +239,77 @@ function ListingsTab() {
     </div>
   );
 }
+
+/* ── Watchlist tab ── */
+function WatchlistTab() {
+  const [items,   setItems]   = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchWatchlist = useCallback(async () => {
+    setLoading(true);
+    try { const res = await api.get('/watchlist'); setItems(res.data); }
+    catch {} finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { fetchWatchlist(); }, [fetchWatchlist]);
+
+  const remove = async (id) => {
+    try { await api.delete(`/watchlist/${id}`); await fetchWatchlist(); }
+    catch { alert('Could not remove item.'); }
+  };
+
+  if (loading) return (
+    <div style={{ textAlign: 'center', padding: 48 }}>
+      <div className="spinner spinner-dark" style={{ width: 24, height: 24, margin: 'auto' }} />
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h2 className="section-title" style={{ marginBottom: 0 }}>Saved searches</h2>
+        <span style={{ fontSize: 13, color: 'var(--muted)' }}>{items.length} saved</span>
+      </div>
+      {items.length === 0 ? (
+        <div className="empty-state">
+          <div className="icon">🔖</div>
+          <p>No saved searches yet. Use the "Save this search" button on the Browse page!</p>
+        </div>
+      ) : items.map(item => {
+        const params = new URLSearchParams();
+        if (item.keywords) params.set('q', item.keywords);
+        if (item.subject)  params.set('subject', item.subject);
+        return (
+          <div key={item._id} style={wl.row}>
+            <div style={{ flex: 1 }}>
+              <div style={wl.title}>
+                {[item.keywords, item.subject].filter(Boolean).join(' · ') || 'All books'}
+              </div>
+              <div style={wl.meta}>
+                {item.keywords && <span>Keywords: <strong>{item.keywords}</strong></span>}
+                {item.keywords && item.subject && <span style={{ margin: '0 6px', color: 'var(--muted2)' }}>·</span>}
+                {item.subject  && <span>Subject: <strong>{item.subject}</strong></span>}
+              </div>
+              <div style={wl.date}>Saved {new Date(item.createdAt).toLocaleDateString()}</div>
+            </div>
+            <div style={wl.actions}>
+              <Link to={`/browse?${params.toString()}`} className="btn btn-primary btn-sm">Browse →</Link>
+              <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }} onClick={() => remove(item._id)}>Remove</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const wl = {
+  row:     { background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '14px 16px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 14 },
+  title:   { fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 },
+  meta:    { fontSize: 12, color: 'var(--muted)', marginBottom: 3 },
+  date:    { fontSize: 11, color: 'var(--muted2)' },
+  actions: { display: 'flex', flexDirection: 'column', gap: 5, flexShrink: 0 },
+};
 
 function StatBox({ value, label }) {
   return (

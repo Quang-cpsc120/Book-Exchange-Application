@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BookCover } from './BookCard';
+import { useMessages } from '../context/MessagesContext';
 import api from '../utils/api';
 
 function conditionClass(c) {
@@ -9,6 +10,7 @@ function conditionClass(c) {
 }
 
 export default function BookModal({ book, index, onClose }) {
+  const { startChat } = useMessages();
   const [offerBook, setOfferBook] = useState('');
   const [message,   setMessage]   = useState('');
   const [status, setStatus] = useState({ loading: false, msg: '', ok: false });
@@ -55,10 +57,18 @@ export default function BookModal({ book, index, onClose }) {
             </div>
             <div style={sellerRow}>
               <div style={sellerAvatar}>{(book.owner?.fullName || 'S')[0]}</div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>{book.owner?.fullName}</div>
                 <div style={{ fontSize: 11, color: 'var(--muted)' }}>{book.owner?.studentId}</div>
               </div>
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => { startChat(book.owner._id, book._id); onClose(); }}
+                style={{ flexShrink: 0 }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Message
+              </button>
             </div>
           </div>
         </div>

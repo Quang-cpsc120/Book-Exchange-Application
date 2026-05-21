@@ -27,6 +27,7 @@ const bookSchema = new mongoose.Schema(
       default: 'Good',
     },
     description: { type: String, default: '' },
+    isbn:        { type: String, default: '', trim: true },
     available: { type: Boolean, default: true },
     views: { type: Number, default: 0 },
   },
