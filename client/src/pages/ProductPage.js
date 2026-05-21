@@ -78,7 +78,19 @@ export default function ProductPage() {
   const openBook = (book, i) => { setSelected(book); setSelectedIdx(i); };
 
   return (
-    <div style={s.pageWrap}>
+    <div style={s.page}>
+      {/* ── Page heading (full width) ── */}
+      <div style={s.pageTop}>
+        <div>
+          <h1 style={s.heading}>Browse Books</h1>
+          <p style={s.sub}>Find textbooks available for exchange from fellow Titans</p>
+        </div>
+        {!loading && (
+          <span style={s.count}>{books.length} listing{books.length !== 1 ? 's' : ''}</span>
+        )}
+      </div>
+
+      <div style={s.contentRow}>
       {/* ── Sidebar ── */}
       <aside style={s.sidebar}>
         <div style={s.sideCard}>
@@ -164,16 +176,6 @@ export default function ProductPage() {
 
       {/* ── Main content ── */}
       <div style={s.main}>
-        <div style={s.mainTop}>
-          <div>
-            <h1 style={s.heading}>Browse Books</h1>
-            <p style={s.sub}>Find textbooks available for exchange from fellow students</p>
-          </div>
-          {!loading && (
-            <span style={s.count}>{books.length} listing{books.length !== 1 ? 's' : ''}</span>
-          )}
-        </div>
-
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <div className="spinner spinner-dark" style={{ width: 28, height: 28, margin: '0 auto 12px' }} />
@@ -200,6 +202,8 @@ export default function ProductPage() {
         )}
       </div>
 
+      </div>{/* end contentRow */}
+
       <BookModal book={selected} index={selectedIdx} onClose={() => setSelected(null)} />
     </div>
   );
@@ -218,10 +222,20 @@ const chip  = { display: 'inline-flex', alignItems: 'center', gap: 5, background
 const chipX = { background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0, display: 'flex', alignItems: 'center' };
 
 const s = {
-  pageWrap: {
+  page: {
     maxWidth: 1200,
     margin: '0 auto',
     padding: '32px 24px',
+  },
+  pageTop: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 24,
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  contentRow: {
     display: 'flex',
     gap: 24,
     alignItems: 'flex-start',
@@ -258,10 +272,9 @@ const s = {
   chips:   { display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 },
   savedMsg:{ fontSize: 12, color: 'var(--success)', fontWeight: 500, marginTop: 7, textAlign: 'center' },
   main:    { flex: 1, minWidth: 0 },
-  mainTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20, flexWrap: 'wrap', gap: 10 },
-  heading: { fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text)', marginBottom: 4 },
-  sub:     { fontSize: 14, color: 'var(--muted)' },
-  count:   { fontSize: 13, color: 'var(--muted)', fontWeight: 500 },
+  heading: { fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text)', marginBottom: 6, lineHeight: 1.15 },
+  sub:     { fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 },
+  count:   { fontSize: 13, color: 'var(--muted)', fontWeight: 500, background: '#fff', border: '1px solid var(--border)', borderRadius: 20, padding: '4px 12px' },
   emptyWrap: { background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: 40 },
   grid:    { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 },
 };
