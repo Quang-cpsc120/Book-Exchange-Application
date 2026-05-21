@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
+const ActivityLog = require('../models/ActivityLog');
 const { protect } = require('../middleware/auth');
 
 // GET /api/messages/unread — unread count (must be before /:convId)
@@ -105,6 +106,15 @@ router.post('/:convId', protect, async (req, res) => {
     });
 
     const populated = await msg.populate('sender', 'fullName _id');
+
+    ActivityLog.create({
+      user:                req.user._id,
+      action:              'message_sent',
+      detail:              `Sent a message`,
+      relatedConversation: conv._id,
+      metadata:            { conversationId: conv._id.toString(), bookId: conv.book?.toString() || null },
+    }).catch(() => {});
+
     res.status(201).json(populated);
   } catch (err) {
     res.status(500).json({ message: err.message });

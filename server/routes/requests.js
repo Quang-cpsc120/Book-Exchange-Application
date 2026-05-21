@@ -119,6 +119,15 @@ router.patch('/:id', protect, async (req, res) => {
         relatedBook: exchangeRequest.book._id,
         relatedRequest: exchangeRequest._id,
       });
+    } else if (status === 'completed') {
+      await ActivityLog.create({
+        user:           req.user._id,
+        action:         'request_completed',
+        detail:         `Marked exchange for "${exchangeRequest.book.title}" as completed`,
+        relatedBook:    exchangeRequest.book._id,
+        relatedRequest: exchangeRequest._id,
+        metadata:       { bookTitle: exchangeRequest.book.title, bookSubject: exchangeRequest.book.subject },
+      });
     }
 
     res.json(exchangeRequest);

@@ -42,13 +42,14 @@ router.get('/', protect, async (req, res) => {
 
     // Log search asynchronously (don't await — never block the response)
     SearchLog.create({
-      user: req.user._id,
-      query: q || '',
-      subject: subject || '',
-      condition: condition || '',
-      sort: sort || 'newest',
+      user:         req.user._id,
+      query:        q || '',
+      subject:      subject || '',
+      classCode:    classCode || '',
+      condition:    condition || '',
+      sort:         sort || 'newest',
       resultsCount: books.length,
-      page: 'browse',
+      page:         'browse',
     }).catch(() => {});
 
     res.json(books);

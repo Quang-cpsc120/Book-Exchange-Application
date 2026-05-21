@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const ActivityLog = require('../models/ActivityLog');
 const { protect } = require('../middleware/auth');
 
 // GET /api/watchlist
@@ -24,6 +25,14 @@ router.post('/', protect, async (req, res) => {
       { $push: { watchlist: { keywords: keywords || '', subject: subject || '', createdAt: new Date() } } },
       { new: true }
     ).select('watchlist');
+
+    ActivityLog.create({
+      user:     req.user._id,
+      action:   'watchlist_add',
+      detail:   `Saved search: ${[keywords, subject].filter(Boolean).join(' / ') || 'all books'}`,
+      metadata: { keywords: keywords || '', subject: subject || '' },
+    }).catch(() => {});
+
     res.json(user.watchlist);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -38,6 +47,14 @@ router.delete('/:id', protect, async (req, res) => {
       { $pull: { watchlist: { _id: req.params.id } } },
       { new: true }
     ).select('watchlist');
+
+    ActivityLog.create({
+      user:     req.user._id,
+      action:   'watchlist_remove',
+      detail:   `Removed a saved search`,
+      metadata: { watchlistItemId: req.params.id },
+    }).catch(() => {});
+
     res.json(user.watchlist);
   } catch (err) {
     res.status(500).json({ message: err.message });

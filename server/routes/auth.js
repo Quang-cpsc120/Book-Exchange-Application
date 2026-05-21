@@ -79,6 +79,13 @@ router.patch('/profile', protect, async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    ActivityLog.create({
+      user:     req.user._id,
+      action:   'profile_update',
+      detail:   `Updated profile settings`,
+      metadata: { fields: Object.keys(updates) },
+    }).catch(() => {});
+
     console.log(`✏️   Profile updated: ${user.fullName}`);
     res.json(user);
   } catch (err) {

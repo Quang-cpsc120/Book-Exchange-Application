@@ -42,17 +42,21 @@ async function ensureIndexes() {
     await db.collection('users').createIndex({ department: 1 });
     await db.collection('users').createIndex({ isAdmin: 1 });
 
-    // Activity logs — fast per-user feed + admin aggregation
+    // Activity logs — per-user feed, category rollup, action funnel, time-series
     await db.collection('activitylogs').createIndex({ user: 1, createdAt: -1 });
     await db.collection('activitylogs').createIndex({ action: 1, createdAt: -1 });
+    await db.collection('activitylogs').createIndex({ category: 1, createdAt: -1 });
     await db.collection('activitylogs').createIndex({ createdAt: -1 });
+    await db.collection('activitylogs').createIndex({ category: 1, action: 1, createdAt: -1 });
 
-    // Search logs — analytics queries
+    // Search logs — query trends, subject popularity, class-code demand, zero-result tracking
     await db.collection('searchlogs').createIndex({ user: 1, createdAt: -1 });
     await db.collection('searchlogs').createIndex({ query: 1 });
     await db.collection('searchlogs').createIndex({ subject: 1 });
+    await db.collection('searchlogs').createIndex({ classCode: 1 });
     await db.collection('searchlogs').createIndex({ createdAt: -1 });
     await db.collection('searchlogs').createIndex({ resultsCount: 1 });
+    await db.collection('searchlogs').createIndex({ subject: 1, classCode: 1 });
 
     // Exchange requests — fast status checks
     await db.collection('exchangerequests').createIndex({ bookOwner: 1, status: 1 });
