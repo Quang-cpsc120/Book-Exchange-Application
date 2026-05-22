@@ -106,13 +106,46 @@ bookswap/
 
 ---
 
-## Setup Instructions
+## Running the App in VS Code (Step-by-Step)
 
 ### Prerequisites
-- Node.js v18+
+- [Node.js v18+](https://nodejs.org/)
+- [VS Code](https://code.visualstudio.com/)
 - A MongoDB Atlas account (free tier works)
 
-### 1 — Configure environment
+---
+
+### Step 1 — Get the code
+
+**Option A — Clone (recommended):**
+1. Click the green **Code** button on GitHub and copy the URL
+2. In VS Code press `Ctrl+Shift+P` → type `Git: Clone` → paste the URL
+3. Choose a folder on your computer to save the project
+
+**Option B — Download ZIP:**
+1. Click **Code → Download ZIP** on GitHub
+2. Extract the ZIP anywhere on your computer (e.g. Desktop or Downloads)
+3. In VS Code go to **File → Open Folder** → select the inner `bookswap` folder (the one that contains `package.json`, `server/`, and `client/`)
+
+---
+
+### Step 2 — Open the terminal
+
+Press `` Ctrl + ` `` to open the integrated terminal. Confirm it shows your project path, for example:
+
+```
+C:\Users\YourName\...\bookswap>
+```
+
+If the path looks wrong, navigate to the correct folder:
+
+```bash
+cd path/to/bookswap
+```
+
+---
+
+### Step 3 — Configure environment
 
 ```bash
 cd server
@@ -139,31 +172,79 @@ EMAIL_SECURE=false
 
 > **Email setup (optional):** For Gmail, generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords). If `EMAIL_USER` / `EMAIL_PASS` are not set, email events are logged to the console only — the app works fully without them.
 
-### 2 — Install all dependencies
+---
+
+### Step 4 — Install dependencies *(first time only)*
 
 ```bash
 # From the root bookswap/ folder
 npm run install-all
 ```
 
-### 3 — Run the app
+This installs packages for the root, `server/`, and `client/` all at once. Takes about 1–2 minutes.
+
+---
+
+### Step 5 — Start the app
 
 ```bash
 npm run dev
 ```
 
-- Backend: http://localhost:5000
-- Frontend: http://localhost:3000
+Wait until the terminal shows:
 
-### 4 — Verify connection
-
-Terminal should show:
 ```
 ✅  MongoDB connected successfully
 📦  Database: bookswap
-📇  Database indexes ensured
 🚀  BookSwap server running on http://localhost:5000
 ```
+
+and React prints:
+
+```
+Compiled successfully!
+Local:  http://localhost:3000
+```
+
+---
+
+### Step 6 — Open in browser
+
+Go to **[http://localhost:3000](http://localhost:3000)** — you should see the Titus sign-in page.
+
+---
+
+### Step 7 — Stop the app
+
+Press **`Ctrl + C`** in the terminal, then type `Y` and press Enter.
+
+---
+
+### Quick-reference
+
+| Task | Command |
+|------|---------|
+| First-time setup | `npm run install-all` |
+| Start everything | `npm run dev` |
+| Backend only | `npm run server` |
+| Frontend only | `npm run client` |
+| Stop | `Ctrl + C` |
+
+| URL | What it is |
+|-----|-----------|
+| `http://localhost:3000` | The app (React frontend) |
+| `http://localhost:5000` | The API (Express backend) |
+
+---
+
+### Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `Cannot find module` error | Run `npm run install-all` again from the root folder |
+| Port already in use | Add `PORT=5001` to `server/.env`; update `"proxy"` in `client/package.json` to match |
+| MongoDB connection fails | Check `MONGO_URI` in `server/.env`; Atlas → Network Access → Add IP → `0.0.0.0/0` |
+| Admin link not showing after `make-admin` | Log out and log back in — the JWT is re-issued with the updated role on login |
 
 ---
 
@@ -474,21 +555,3 @@ curl -X POST http://localhost:5000/api/admin/make-admin \
 
 Then **log out and log back in**. The Admin Dashboard link will appear in your navbar dropdown.
 
----
-
-## Troubleshooting
-
-**MongoDB connection fails**
-- Check `MONGO_URI` in `server/.env`
-- Whitelist your IP: Atlas → Network Access → Add IP → 0.0.0.0/0
-- URL-encode special characters in your password (e.g. `@` → `%40`)
-
-**Port already in use**
-- Set `PORT=5001` in `server/.env`
-- Update `"proxy"` in `client/package.json` to match
-
-**"Cannot find module" errors**
-- Run `npm run install-all` again from the root folder
-
-**Admin link not showing after make-admin**
-- Log out and log back in — the JWT is re-issued with the updated user on login

@@ -21,3 +21,6 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+
+# Claude Code memory (local only — not needed to run the app)
+.claude/
